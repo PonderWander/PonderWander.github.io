@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Jordan Castle — Systems Architect & Theorist</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg:       #080c0e;
+  --bg2:      #0d1317;
+  --bg3:      #131b1f;
+  --bg4:      #1a2328;
+  --border:   rgba(255,255,255,0.06);
+  --border2:  rgba(255,255,255,0.12);
+  --text:     #d8e0e4;
+  --muted:    #607880;
+  --dim:      #3a4e56;
+  --accent:   #4effc4;
+  --accent2:  #4eb8ff;
+  --accent3:  #ffcf4e;
+  --mono: 'IBM Plex Mono', monospace;
+  --serif: 'Libre Baskerville', Georgia, serif;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--mono);
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+::selection { background: var(--accent); color: #000; }
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(78,255,196,0.022) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(78,255,196,0.022) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 0;
+}
+.container {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  position: relative;
+  z-index: 1;
+}
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  border-bottom: 1px solid var(--border);
+  background: rgba(8,12,14,0.88);
+  backdrop-filter: blur(14px);
+}
+.nav-inner {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 0 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 52px;
+}
+.nav-sig { font-size: 12px; color: var(--accent); letter-spacing: 0.08em; font-weight: 500; }
+.nav-links { display: flex; gap: 2rem; list-style: none; }
+.nav-links a { color: var(--muted); text-decoration: none; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.2s; }
+.nav-links a:hover { color: var(--text); }
+.hero { padding: 140px 0 100px; border-bottom: 1px solid var(--border); }
+.hero-label {
+  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: 2rem; display: flex; align-items: center; gap: 12px;
+}
+.hero-label::before {
+  content: ''; display: inline-block; width: 32px; height: 1px; background: var(--accent);
+}
+.hero h1 {
+  font-family: var(--serif); font-size: clamp(2.4rem, 6vw, 4.2rem);
+  font-weight: 400; line-height: 1.12; color: #ecf2f5;
+  margin-bottom: 2rem; max-width: 720px;
+}
+.hero h1 em { font-style: italic; color: var(--accent); }
+.hero-body { font-size: 14px; color: var(--muted); max-width: 520px; line-height: 1.85; margin-bottom: 3rem; }
+.hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+.btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  padding: 10px 22px; font-family: var(--mono); font-size: 12px;
+  letter-spacing: 0.08em; text-decoration: none; border: 1px solid; transition: all 0.2s; cursor: pointer;
+}
+.btn-primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 500; }
+.btn-primary:hover { background: transparent; color: var(--accent); }
+.btn-secondary { background: transparent; color: var(--muted); border-color: var(--border2); }
+.btn-secondary:hover { color: var(--text); border-color: var(--text); }
+.status-bar {
+  padding: 1rem 0; border-bottom: 1px solid var(--border);
+  display: flex; gap: 2.5rem; overflow-x: auto;
+}
+.status-item { display: flex; align-items: center; gap: 8px; white-space: nowrap; font-size: 11px; color: var(--dim); }
+.status-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2.4s ease-in-out infinite; flex-shrink: 0; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+section { padding: 80px 0; border-bottom: 1px solid var(--border); }
+.section-header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 3rem; }
+.section-num { font-size: 10px; color: var(--dim); letter-spacing: 0.12em; }
+.section-title { font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted); }
+.expertise-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  border: 1px solid var(--border);
+  background: var(--border);
+  margin: 0 auto;
+}
+.expertise-card {
+  background: var(--bg2);
+  padding: clamp(1rem, 2vw, 1.5em) clamp(1rem, 2.2vw, 1.75em);
+  transition: background 0.2s;
+  display: flex;
+  flex-direction: column;
+  float: left;
+  width: 100%;
+}
+.expertise-card p { flex: 1; }
+.expertise-card:hover { background: var(--bg3); }
+.expertise-icon { width: 32px; height: 32px; margin-bottom: 1.25rem; opacity: 0.65; }
+.expertise-card h3 {
+  font-family: var(--mono); font-size: 12px; font-weight: 500;
+  letter-spacing: 0.08em; color: var(--text); margin-bottom: 0.75rem; text-transform: uppercase;
+}
+.expertise-card p { font-size: 12px; color: var(--muted); line-height: 1.7; }
+.tag-list { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 1rem; }
+.tag { font-size: 10px; letter-spacing: 0.1em; padding: 3px 8px; border: 1px solid var(--border2); color: var(--dim); text-transform: uppercase; }
+.paper-list { display: flex; flex-direction: column; }
+.paper-item {
+  padding: 1.75rem 0; border-bottom: 1px solid var(--border);
+  display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: start;
+}
+.paper-item:first-child { border-top: 1px solid var(--border); }
+.paper-meta { font-size: 10px; letter-spacing: 0.12em; color: var(--dim); text-transform: uppercase; margin-bottom: 0.5rem; }
+.paper-title { font-family: var(--serif); font-size: 1.05rem; font-weight: 400; color: var(--text); line-height: 1.45; margin-bottom: 0.5rem; }
+.paper-abstract { font-size: 12px; color: var(--muted); line-height: 1.7; max-width: 600px; }
+.paper-link {
+  display: inline-flex; align-items: center; gap: 6px; font-size: 11px;
+  color: var(--accent2); text-decoration: none; white-space: nowrap; margin-top: 0.75rem;
+  letter-spacing: 0.06em; transition: opacity 0.2s;
+}
+.paper-link:hover { opacity: 0.7; }
+.about-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: start; }
+.about-text { font-family: var(--serif); font-size: 1rem; line-height: 1.85; color: #aabcc4; }
+.about-text p + p { margin-top: 1.25rem; }
+.spec-table { border: 1px solid var(--border); width: 100%; }
+.spec-row { display: grid; grid-template-columns: 120px 1fr; border-bottom: 1px solid var(--border); }
+.spec-row:last-child { border-bottom: none; }
+.spec-key { padding: 10px 14px; font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--dim); border-right: 1px solid var(--border); background: var(--bg2); }
+.spec-val { padding: 10px 14px; font-size: 12px; color: var(--muted); }
+.contact-block { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; }
+.contact-heading { font-family: var(--serif); font-size: clamp(1.6rem, 4vw, 2.4rem); font-weight: 400; color: var(--text); line-height: 1.3; margin-bottom: 1rem; }
+.contact-sub { font-size: 13px; color: var(--muted); margin-bottom: 2rem; }
+.contact-links { display: flex; flex-direction: column; gap: 12px; }
+.contact-link {
+  display: flex; align-items: center; gap: 12px; text-decoration: none;
+  color: var(--muted); font-size: 12px; letter-spacing: 0.06em; transition: color 0.2s;
+  padding: 12px 16px; border: 1px solid var(--border);
+}
+.contact-link:hover { color: var(--text); border-color: var(--border2); }
+.contact-link-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--dim); width: 60px; flex-shrink: 0; }
+footer { padding: 2rem 0; display: flex; justify-content: space-between; align-items: center; font-size: 11px; color: var(--dim); }
+.fade-up { opacity: 0; transform: translateY(20px); transition: opacity 0.6s ease, transform 0.6s ease; }
+.fade-up.visible { opacity: 1; transform: none; }
+
+@keyframes heroIn {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: none; }
+}
+.hero-label { opacity: 0; animation: heroIn 0.6s ease forwards; animation-delay: 0.1s; }
+.hero h1    { opacity: 0; animation: heroIn 0.7s ease forwards; animation-delay: 0.25s; }
+.hero-body  { opacity: 0; animation: heroIn 0.7s ease forwards; animation-delay: 0.42s; }
+.hero-ctas  { opacity: 0; animation: heroIn 0.6s ease forwards; animation-delay: 0.58s; }
+@media (max-width: 720px) {
+  .expertise-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 640px) {
+  .about-grid, .contact-block { grid-template-columns: 1fr; gap: 2.5rem; }
+  .hero h1 { font-size: 2rem; }
+  .nav-links { display: none; }
+  .expertise-grid { grid-template-columns: 1fr; }
+}
+.paper-loading {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 11px; color: var(--dim); letter-spacing: 0.1em;
+  padding: 2rem 0; text-transform: uppercase;
+}
+.paper-loading-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent); flex-shrink: 0;
+  animation: pulse 1.4s ease-in-out infinite;
+}
+.paper-error { font-size: 12px; color: var(--muted); padding: 1.5rem 0; }
+.paper-count-label { font-size: 11px; color: var(--dim); letter-spacing: 0.08em; }
+.abstract-body { font-size: 12px; color: var(--muted); line-height: 1.7; max-width: 600px; }
+.abstract-short { display: inline; }
+.abstract-full  { display: none; }
+.abstract-toggle {
+  background: none; border: none; cursor: pointer;
+  color: var(--accent2); font-family: var(--mono); font-size: 11px;
+  letter-spacing: 0.06em; padding: 0; margin-left: 4px; transition: opacity 0.2s;
+}
+.abstract-toggle:hover { opacity: 0.7; }
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-inner">
+    <span class="nav-sig">// JORDAN_CASTLE</span>
+    <ul class="nav-links">
+      <li><a href="#expertise">Expertise</a></li>
+      <li><a href="#research">Research</a></li>
+      <li><a href="#about">About</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </div>
+</nav>
+
+<div class="container">
+  <section class="hero">
+    <div class="hero-label">Available for Consulting &amp; Collaboration</div>
+    <h1>Systems thinker.<br/><em>Applied theorist.</em><br/>Architect.</h1>
+    <p class="hero-body">
+      Working at the intersection of software architecture, structural analysis,
+      and applied game theory — building frameworks that hold under pressure and
+      models that explain what others overlook.
+    </p>
+    <div class="hero-ctas">
+      <a href="#research" class="btn btn-primary">View Research →</a>
+      <a href="#contact" class="btn btn-secondary">Get in Touch</a>
+    </div>
+  </section>
+</div>
+
+<div class="container">
+  <div class="status-bar">
+    <div class="status-item"><span class="status-dot"></span>SSRN Publications Active</div>
+    <div class="status-item">Systems Architecture</div>
+    <div class="status-item">Applied Game Theory</div>
+    <div class="status-item">Structural Analysis</div>
+    <div class="status-item">RF &amp; Spectral</div>
+    <div class="status-item">Networking &amp; Topology</div>
+    <div class="status-item">Modeling &amp; Data Analysis</div>
+    <div class="status-item">Firmware &amp; Boot Systems</div>
+    <div class="status-item">Open to Engagements</div>
+  </div>
+</div>
+
+<div class="container" id="expertise">
+  <section>
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <span class="section-title">Domains of Work</span>
+    </div>
+    <div class="expertise-grid">
+
+      <div class="expertise-card fade-up">
+        <svg class="expertise-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="12" height="12" stroke="#4effc4" stroke-width="1.5"/>
+          <rect x="18" y="2" width="12" height="12" stroke="#4effc4" stroke-width="1.5"/>
+          <rect x="10" y="18" width="12" height="12" stroke="#4effc4" stroke-width="1.5"/>
+          <line x1="8" y1="14" x2="8" y2="18" stroke="#4effc4" stroke-width="1"/>
+          <line x1="24" y1="14" x2="24" y2="18" stroke="#4effc4" stroke-width="1"/>
+          <line x1="8" y1="18" x2="16" y2="18" stroke="#4effc4" stroke-width="1"/>
+          <line x1="24" y1="18" x2="16" y2="18" stroke="#4effc4" stroke-width="1"/>
+        </svg>
+        <h3>Software &amp; Systems Architecture</h3>
+        <p>Designing systems that scale, fail gracefully, and remain comprehensible under complexity. From distributed infrastructure to organizational architecture.</p>
+        <div class="tag-list">
+          <span class="tag">Distributed Systems</span>
+          <span class="tag">Architecture Patterns</span>
+          <span class="tag">Complexity Theory</span>
+        </div>
+      </div>
+
+      <div class="expertise-card fade-up">
+        <svg class="expertise-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <polygon points="16,3 29,24 3,24" stroke="#4eb8ff" stroke-width="1.5" fill="none"/>
+          <line x1="16" y1="3" x2="16" y2="24" stroke="#4eb8ff" stroke-width="1" stroke-dasharray="2,2"/>
+          <line x1="3" y1="24" x2="29" y2="24" stroke="#4eb8ff" stroke-width="1"/>
+          <line x1="9.5" y1="13.5" x2="22.5" y2="13.5" stroke="#4eb8ff" stroke-width="1" opacity="0.5"/>
+        </svg>
+        <h3>Structural Analysis</h3>
+        <p>Identifying load-bearing assumptions in complex systems — organizational, technical, and theoretical. Finding what breaks first and engineering accordingly.</p>
+        <div class="tag-list">
+          <span class="tag">Failure Modes</span>
+          <span class="tag">Dependency Mapping</span>
+          <span class="tag">Resilience Engineering</span>
+        </div>
+      </div>
+
+      <div class="expertise-card fade-up">
+        <svg class="expertise-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="16" cy="16" r="13" stroke="#ffcf4e" stroke-width="1.5"/>
+          <circle cx="16" cy="16" r="6" stroke="#ffcf4e" stroke-width="1"/>
+          <line x1="16" y1="3" x2="16" y2="10" stroke="#ffcf4e" stroke-width="1"/>
+          <line x1="16" y1="22" x2="16" y2="29" stroke="#ffcf4e" stroke-width="1"/>
+          <line x1="3" y1="16" x2="10" y2="16" stroke="#ffcf4e" stroke-width="1"/>
+          <line x1="22" y1="16" x2="29" y2="16" stroke="#ffcf4e" stroke-width="1"/>
+        </svg>
+        <h3>Concept &amp; Game Theory</h3>
+        <p>Modeling strategic interaction in markets, institutions, and multi-agent systems. Translating theoretical equilibria into actionable decision frameworks.</p>
+        <div class="tag-list">
+          <span class="tag">Mechanism Design</span>
+          <span class="tag">Equilibrium Analysis</span>
+          <span class="tag">Strategic Modeling</span>
+        </div>
+      </div>
+
+      <div class="expertise-card fade-up">
+        <svg class="expertise-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="8" width="28" height="16" stroke="#4effc4" stroke-width="1.5" fill="none"/>
+          <line x1="2" y1="14" x2="30" y2="14" stroke="#4effc4" stroke-width="1"/>
+          <line x1="2" y1="20" x2="30" y2="20" stroke="#4effc4" stroke-width="1"/>
+          <line x1="10" y1="8" x2="10" y2="24" stroke="#4effc4" stroke-width="1"/>
+        </svg>
+        <h3>Applied System Architecture</h3>
+        <p>Bridging theoretical frameworks and deployed systems. Making abstract models operational — with attention to constraints, tradeoffs, and real-world drift.</p>
+        <div class="tag-list">
+          <span class="tag">System Design</span>
+          <span class="tag">Formal Methods</span>
+          <span class="tag">SSRN Research</span>
+        </div>
+      </div>
+
+      <div class="expertise-card fade-up">
+        <svg class="expertise-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="4" y="10" width="24" height="14" stroke="#ffcf4e" stroke-width="1.5" fill="none"/>
+          <rect x="8" y="14" width="3" height="3" stroke="#ffcf4e" stroke-width="1" fill="none"/>
+          <rect x="14" y="14" width="3" height="3" stroke="#ffcf4e" stroke-width="1" fill="none"/>
+          <rect x="20" y="14" width="3" height="3" stroke="#ffcf4e" stroke-width="1" fill="none"/>
+          <line x1="8" y1="10" x2="8" y2="7" stroke="#ffcf4e" stroke-width="1"/>
+          <line x1="14" y1="10" x2="14" y2="7" stroke="#ffcf4e" stroke-width="1"/>
+          <line x1="20" y1="10" x2="20" y2="7" stroke="#ffcf4e" stroke-width="1"/>
+          <line x1="8" y1="24" x2="8" y2="27" stroke="#ffcf4e" stroke-width="1"/>
+          <line x1="14" y1="24" x2="14" y2="27" stroke="#ffcf4e" stroke-width="1"/>
+          <line x1="20" y1="24" x2="20" y2="27" stroke="#ffcf4e" stroke-width="1"/>
+          <line x1="4" y1="19" x2="1" y2="19" stroke="#ffcf4e" stroke-width="1"/>
+          <line x1="28" y1="19" x2="31" y2="19" stroke="#ffcf4e" stroke-width="1"/>
+        </svg>
+        <h3>Hardware &amp; Firmware</h3>
+        <p>Low-level systems work spanning hardware tinkering, firmware architecture, Secure Boot chain-of-trust, UEFI/EFI internals, and GRUB configuration and customization.</p>
+        <div class="tag-list">
+          <span class="tag">Secure Boot</span>
+          <span class="tag">UEFI / EFI</span>
+          <span class="tag">GRUB</span>
+          <span class="tag">Firmware</span>
+          <span class="tag">Hardware Tinkering</span>
+        </div>
+      </div>
+
+      <div class="expertise-card fade-up">
+        <svg class="expertise-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="16" cy="16" r="3" stroke="#4eb8ff" stroke-width="1.5"/>
+          <path d="M16 4 Q24 10 24 16 Q24 22 16 28 Q8 22 8 16 Q8 10 16 4Z" stroke="#4eb8ff" stroke-width="1" fill="none"/>
+          <line x1="4" y1="10" x2="28" y2="10" stroke="#4eb8ff" stroke-width="1" opacity="0.4"/>
+          <line x1="4" y1="16" x2="28" y2="16" stroke="#4eb8ff" stroke-width="1" opacity="0.4"/>
+          <line x1="4" y1="22" x2="28" y2="22" stroke="#4eb8ff" stroke-width="1" opacity="0.4"/>
+          <circle cx="16" cy="4" r="1.5" fill="#4eb8ff"/>
+          <circle cx="16" cy="28" r="1.5" fill="#4eb8ff"/>
+        </svg>
+        <h3>Modeling &amp; Data Analysis</h3>
+        <p>Full-spectrum modeling across qualitative and quantitative methods — statistical, econometric, agent-based, predictive, formal mathematical, and quantum approaches. Building models that explain, predict, and decide.</p>
+        <div class="tag-list">
+          <span class="tag">Econometric</span>
+          <span class="tag">Agent-Based</span>
+          <span class="tag">Predictive / ML</span>
+          <span class="tag">Formal Models</span>
+          <span class="tag">Quantum</span>
+          <span class="tag">Qualitative</span>
+        </div>
+      </div>
+
+      <div class="expertise-card fade-up">
+        <svg class="expertise-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2 20 Q6 8 10 20 Q14 32 18 20 Q22 8 26 20 Q28 26 30 20" stroke="#4effc4" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+          <line x1="2" y1="26" x2="30" y2="26" stroke="#4effc4" stroke-width="1" opacity="0.3"/>
+          <line x1="16" y1="4" x2="16" y2="28" stroke="#4effc4" stroke-width="1" stroke-dasharray="2,3" opacity="0.4"/>
+          <circle cx="16" cy="20" r="2" fill="#4effc4" opacity="0.8"/>
+        </svg>
+        <h3>RF, Spectral &amp; Lithography</h3>
+        <p>Radio frequency systems, spectral analysis, and lithographic process knowledge. Understanding signal behavior, frequency domains, and the physical fabrication constraints that govern what hardware can and cannot do.</p>
+        <div class="tag-list">
+          <span class="tag">RF Systems</span>
+          <span class="tag">Spectral Analysis</span>
+          <span class="tag">Lithography</span>
+          <span class="tag">Signal Processing</span>
+          <span class="tag">Frequency Domains</span>
+        </div>
+      </div>
+
+      <div class="expertise-card fade-up">
+        <svg class="expertise-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="16" cy="16" r="3" stroke="#4eb8ff" stroke-width="1.5"/>
+          <circle cx="5" cy="10" r="2" stroke="#4eb8ff" stroke-width="1"/>
+          <circle cx="27" cy="10" r="2" stroke="#4eb8ff" stroke-width="1"/>
+          <circle cx="5" cy="24" r="2" stroke="#4eb8ff" stroke-width="1"/>
+          <circle cx="27" cy="24" r="2" stroke="#4eb8ff" stroke-width="1"/>
+          <line x1="7" y1="11" x2="14" y2="15" stroke="#4eb8ff" stroke-width="1"/>
+          <line x1="25" y1="11" x2="18" y2="15" stroke="#4eb8ff" stroke-width="1"/>
+          <line x1="7" y1="23" x2="14" y2="17" stroke="#4eb8ff" stroke-width="1"/>
+          <line x1="25" y1="23" x2="18" y2="17" stroke="#4eb8ff" stroke-width="1"/>
+          <line x1="5" y1="12" x2="5" y2="22" stroke="#4eb8ff" stroke-width="1" stroke-dasharray="2,2"/>
+          <line x1="27" y1="12" x2="27" y2="22" stroke="#4eb8ff" stroke-width="1" stroke-dasharray="2,2"/>
+        </svg>
+        <h3>Networking</h3>
+        <p>Full-stack networking knowledge from physical layer through cloud — optical systems, IEEE standards, OSI model, network topology design, and interaction congruency across distributed and heterogeneous environments.</p>
+        <div class="tag-list">
+          <span class="tag">Optical</span>
+          <span class="tag">IEEE</span>
+          <span class="tag">OSI</span>
+          <span class="tag">Cloud</span>
+          <span class="tag">Topology</span>
+          <span class="tag">Interaction Congruency</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+</div>
+
+<div class="container" id="research">
+  <section>
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <span class="section-title">Selected Research</span>
+    </div>
+<div class="paper-list" id="paperList">
+
+  <div class="paper-item" data-paper>
+    <div>
+      <div class="paper-meta">SSRN · 2026 · Economic Theory</div>
+      <div class="paper-title">Household Infrastructure Stabilization as a Structural Economic Resilience Mechanism: A Framework for Distributed Infrastructure and Energy Systems</div>
+      <div class="abstract-body">
+        <span class="abstract-short">This paper introduces a conceptual framework examining whether integration between housing infrastructure and localized energy production may function as a structural stabilizing mechanism within modern economies...</span>
+        <button class="abstract-toggle" onclick="toggleAbstract(this)">more</button>
+        <span class="abstract-full"> This paper introduces a conceptual framework examining whether integration between housing infrastructure and localized energy production may function as a structural stabilizing mechanism within modern economies.  Household financial fragility is often influenced by volatility in essential expenditures, particularly housing and energy costs, which can act as channels for broader economic shock transmission.  The framework explores whether reducing exposure to such volatility through infrastructure design could contribute to more stable household balance sheets and in turn enhance macroeconomic resilience.
+
+Using a circulation-based perspective, the paper describes a "stability flywheel" in which improved predictability at the household level supports more consistent participation in local economic activity, reinforces community-level resilience and reduces amplification of downturns.  It also considers potential interactions between distributed residential energy systems and evolving grid demands in regions experiencing growth in electricity-intensive infrastructure.
+
+The objective is not to prescribe specific policies, but to outline a set of mechanisms and research questions that may inform further empirical and modeling work at the intersection of household finance, infrastructure economics and financial stability. </span>
+      </div>
+      <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6174978" class="paper-link" target="_blank">Read on SSRN ↗</a>
+    </div>
+  </div>
+  <div style="margin-top:2rem; display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+    <button class="btn btn-secondary" id="showMoreBtn" onclick="showMorePapers()" style="display:none;">Show More Papers</button>
+    <a href="https://papers.ssrn.com/sol3/cf_dev/AbsByAuth.cfm?per_id=10215177" target="_blank" class="btn btn-secondary">All papers on SSRN →</a>
+    <span class="paper-count-label" id="paperCountLabel"></span>
+  </div>
+  </section>
+</div>
+
+<div class="container" id="about">
+  <section>
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <span class="section-title">About</span>
+    </div>
+    <div class="about-grid">
+      <div class="about-text fade-up">
+        <p>
+           I'm a systems builder focused on uncovering how complex structures actually behave and where they fail.
+        </p>
+        <p>
+          My work sits at the intersection of infrastructure, systems, economics and intelligence.  Technically, I operate
+          from the ground up.  I'm comfortable at the hardware, firmware, OS level and application layer.  I build into distributed systems,
+          data pipelines and AI-assisted tooling.  I prioritize control, observability and resilience, favoring hardened, minimal environments over abstraction-heavy 
+          approaches.            
+        </p>
+        <p>
+          I don't treat domains as isolated.  The same structural patterns show up in code, markets, networks and human systems.
+          My work is identifying those patterns, modeling them and turning them into something measurable and actionable.
+        </p>
+        <p>
+          I build to understand and once understood, to reshape.
+        </p>
+      </div>
+      <div class="fade-up">
+        <div class="spec-table">
+          <div class="spec-row">
+            <span class="spec-key">Focus</span>
+            <span class="spec-val">Systems Architecture, Applied Theory</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">Based</span>
+            <span class="spec-val">GMT -5:00</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">Research</span>
+            <span class="spec-val">SSRN · Working Papers</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">Open to</span>
+            <span class="spec-val">Consulting, Collaboration, Speaking</span>
+          </div>
+          <div class="spec-row">
+            <span class="spec-key">Status</span>
+            <span class="spec-val" style="color:var(--accent);">● Available</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="container" id="contact">
+  <section style="border-bottom:none;">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <span class="section-title">Contact</span>
+    </div>
+    <div class="contact-block">
+      <div class="fade-up">
+        <h2 class="contact-heading">Let's work on something that matters.</h2>
+        <p class="contact-sub">Consulting engagements, research collaboration, advisory roles, or a conversation about systems and theory.</p>
+        <a href="./contact.html" class="btn btn-primary"><span class="__cf_email__">[contact&#160;form]</span> →</a>
+      </div>
+      <span id="email"></span>
+      <div class="contact-links fade-up">
+        <a href="https://papers.ssrn.com/sol3/cf_dev/AbsByAuth.cfm?per_id=10215177" target="_blank" class="contact-link">
+          <span class="contact-link-label">SSRN</span>
+          ssrn.com/author/jordan_castle
+        </a>
+        <a href="https://linkedin.com/in/jordan-castle-512878145" target="_blank" class="contact-link">
+          <span class="contact-link-label">LinkedIn</span>
+          linkedin.com/in/jordan-castle
+        </a>
+        <a href="https://github.com/PonderWander" target="_blank" class="contact-link">
+          <span class="contact-link-label">GitHub</span>
+          github.com/PonderWander
+        </a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="container">
+  <footer>
+    <span>// Jordan Castle — Systems &amp; Theory</span>
+  </footer>
+</div>
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 90);
+        obs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
+  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
+});
+
+// paper show/hide toggle
+function toggleAbstract(btn) {
+  const body  = btn.closest('.abstract-body');
+  const short = body.querySelector('.abstract-short');
+  const full  = body.querySelector('.abstract-full');
+  const open  = full.style.display === 'inline';
+  short.style.display = open ? 'inline' : 'none';
+  full.style.display  = open ? 'none'   : 'inline';
+  btn.textContent     = open ? 'more'   : 'less';
+}
+
+// paginated show more
+const PAGE_SIZE = 3;
+let shownCount = 0;
+
+function initPapers() {
+  const papers = Array.from(document.querySelectorAll('[data-paper]'));
+  papers.forEach((p, i) => p.style.display = i < PAGE_SIZE ? '' : 'none');
+  shownCount = Math.min(PAGE_SIZE, papers.length);
+  updatePaperControls(papers);
+}
+
+function showMorePapers() {
+  const papers = Array.from(document.querySelectorAll('[data-paper]'));
+  const next = papers.slice(shownCount, shownCount + PAGE_SIZE);
+  next.forEach(p => {
+    p.style.display = '';
+    p.classList.add('fade-up');
+    requestAnimationFrame(() => setTimeout(() => p.classList.add('visible'), 80));
+  });
+  shownCount += next.length;
+  updatePaperControls(papers);
+}
+
+function updatePaperControls(papers) {
+  const btn   = document.getElementById('showMoreBtn');
+  const label = document.getElementById('paperCountLabel');
+  btn.style.display = shownCount < papers.length ? 'inline-flex' : 'none';
+  label.textContent = `Showing ${shownCount} of ${papers.length}`;
+}
+
+initPapers();
+</script>
+</body>
+</html>
