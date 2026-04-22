@@ -172,6 +172,50 @@ footer { padding: 2rem 0; display: flex; justify-content: space-between; align-i
 .hero h1    { opacity: 0; animation: heroIn 0.7s ease forwards; animation-delay: 0.25s; }
 .hero-body  { opacity: 0; animation: heroIn 0.7s ease forwards; animation-delay: 0.42s; }
 .hero-ctas  { opacity: 0; animation: heroIn 0.6s ease forwards; animation-delay: 0.58s; }
+/* ── HAMBURGER BUTTON ── */
+.nav-hamburger {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  width: 32px;
+  height: 32px;
+}
+.nav-hamburger span {
+  display: block;
+  width: 100%;
+  height: 1px;
+  background: var(--muted);
+  transition: all 0.2s;
+}
+.nav-hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); background: var(--text); }
+.nav-hamburger.open span:nth-child(2) { opacity: 0; }
+.nav-hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); background: var(--text); }
+/* ── MOBILE DROPDOWN MENU ── */
+.nav-mobile-menu {
+  display: none;
+  flex-direction: column;
+  border-top: 1px solid var(--border);
+  background: rgba(8,12,14,0.97);
+  backdrop-filter: blur(14px);
+}
+.nav-mobile-menu a {
+  padding: 14px 2rem;
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid var(--border);
+  transition: color 0.2s, background 0.2s;
+}
+.nav-mobile-menu a:hover  { color: var(--text); background: var(--bg2); }
+.nav-mobile-menu a.nav-mobile-fun { color: var(--accent3); letter-spacing: 0.08em; text-transform: none; font-size: 12px; }
+.nav-mobile-menu.open { display: flex; }
 @media (max-width: 720px) {
   .expertise-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
@@ -179,6 +223,7 @@ footer { padding: 2rem 0; display: flex; justify-content: space-between; align-i
   .about-grid, .contact-block { grid-template-columns: 1fr; gap: 2.5rem; }
   .hero h1 { font-size: 2rem; }
   .nav-links { display: none; }
+  .nav-hamburger { display: flex; }
   .expertise-grid { grid-template-columns: 1fr; }
 }
 .paper-loading {
