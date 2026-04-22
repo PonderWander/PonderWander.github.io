@@ -3,260 +3,13 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Contact — Your Name</title>
+<title>Contact — Jordan Castle</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
-<style>
-:root {
-  --bg:      #080c0e;
-  --bg2:     #0d1317;
-  --bg3:     #131b1f;
-  --border:  rgba(255,255,255,0.06);
-  --border2: rgba(255,255,255,0.12);
-  --text:    #d8e0e4;
-  --muted:   #607880;
-  --dim:     #3a4e56;
-  --accent:  #4effc4;
-  --accent2: #4eb8ff;
-  --accent3: #ffcf4e;
-  --mono:    'IBM Plex Mono', monospace;
-  --serif:   'Libre Baskerville', Georgia, serif;
-}
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-html { scroll-behavior: smooth; }
-body {
-  background: var(--bg);
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 14px;
-  line-height: 1.7;
-  overflow-x: hidden;
-  min-height: 100vh;
-}
-::selection { background: var(--accent); color: #000; }
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background-image:
-    linear-gradient(rgba(78,255,196,0.022) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(78,255,196,0.022) 1px, transparent 1px);
-  background-size: 40px 40px;
-  pointer-events: none; z-index: 0;
-}
-.container { max-width: 960px; margin: 0 auto; padding: 0 2rem; position: relative; z-index: 1; }
-
-/* NAV */
-nav {
-  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-  border-bottom: 1px solid var(--border);
-  background: rgba(8,12,14,0.88);
-  backdrop-filter: blur(14px);
-}
-.nav-inner {
-  max-width: 960px; margin: 0 auto; padding: 0 2rem;
-  display: flex; align-items: center; justify-content: space-between; height: 52px;
-}
-.nav-sig { font-size: 12px; color: var(--accent); letter-spacing: 0.08em; font-weight: 500; text-decoration: none; }
-.nav-links { display: flex; gap: 2rem; list-style: none; }
-.nav-links a { color: var(--muted); text-decoration: none; font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; transition: color 0.2s; }
-.nav-links a:hover { color: var(--text); }
-.nav-links a.active { color: var(--accent); }
-
-/* PAGE HEADER */
-.page-header {
-  padding: 120px 0 60px;
-  border-bottom: 1px solid var(--border);
-}
-.page-label {
-  font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
-  color: var(--accent); margin-bottom: 1.5rem;
-  display: flex; align-items: center; gap: 12px;
-}
-.page-label::before {
-  content: ''; display: inline-block; width: 32px; height: 1px; background: var(--accent);
-}
-.page-header h1 {
-  font-family: var(--serif); font-size: clamp(2rem, 5vw, 3.4rem);
-  font-weight: 400; line-height: 1.15; color: #ecf2f5; margin-bottom: 1rem;
-}
-.page-header h1 em { font-style: italic; color: var(--accent); }
-.page-sub { font-size: 13px; color: var(--muted); max-width: 480px; line-height: 1.85; }
-
-/* LAYOUT */
-.form-layout {
-  display: grid;
-  grid-template-columns: 1fr 340px;
-  gap: 5rem;
-  padding: 5rem 0;
-  align-items: start;
-}
-
-/* FORM */
-.form-block { display: flex; flex-direction: column; gap: 0; }
-
-.field-group {
-  display: flex; flex-direction: column;
-  border-bottom: 1px solid var(--border);
-  padding: 1.5rem 0;
-  position: relative;
-}
-.field-group:first-child { border-top: 1px solid var(--border); }
-
-.field-label {
-  font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
-  color: var(--dim); margin-bottom: 0.6rem;
-  display: flex; justify-content: space-between; align-items: center;
-}
-.field-label span { color: var(--accent); font-size: 10px; }
-
-.field-input,
-.field-select,
-.field-textarea {
-  background: transparent;
-  border: none;
-  outline: none;
-  color: var(--text);
-  font-family: var(--mono);
-  font-size: 13px;
-  line-height: 1.6;
-  width: 100%;
-  resize: none;
-  caret-color: var(--accent);
-  transition: color 0.2s;
-}
-.field-input::placeholder,
-.field-textarea::placeholder { color: var(--dim); }
-.field-input:focus,
-.field-textarea:focus { color: #ecf2f5; }
-
-.field-select {
-  appearance: none;
-  cursor: pointer;
-  color: var(--muted);
-}
-.field-select:focus { color: var(--text); }
-.field-select option { background: var(--bg2); color: var(--text); }
-
-.select-wrap { position: relative; }
-.select-arrow {
-  position: absolute; right: 0; top: 50%; transform: translateY(-50%);
-  font-size: 10px; color: var(--dim); pointer-events: none;
-}
-
-.field-textarea { min-height: 120px; }
-
-.field-underline {
-  position: absolute; bottom: -1px; left: 0;
-  height: 1px; width: 0; background: var(--accent);
-  transition: width 0.3s ease;
-}
-.field-group:focus-within .field-underline { width: 100%; }
-.field-group:focus-within .field-label { color: var(--accent); }
-
-/* CHAR COUNT */
-.char-count { font-size: 10px; color: var(--dim); margin-top: 0.4rem; text-align: right; }
-.char-count.warn { color: var(--accent3); }
-
-/* SUBMIT */
-.form-footer {
-  display: flex; align-items: center; justify-content: space-between;
-  padding-top: 2rem; gap: 1rem; flex-wrap: wrap;
-}
-.form-note { font-size: 11px; color: var(--dim); max-width: 280px; line-height: 1.6; }
-
-.btn {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 10px 24px; font-family: var(--mono); font-size: 12px;
-  letter-spacing: 0.08em; text-decoration: none; border: 1px solid;
-  transition: all 0.2s; cursor: pointer; background: none;
-}
-.btn-primary { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 500; }
-.btn-primary:hover { background: transparent; color: var(--accent); }
-.btn-primary:disabled { opacity: 0.4; cursor: not-allowed; }
-
-/* SUCCESS STATE */
-.success-msg {
-  display: none; align-items: center; gap: 12px;
-  padding: 1rem 1.25rem; border: 1px solid var(--accent);
-  color: var(--accent); font-size: 12px; margin-top: 1.5rem;
-  letter-spacing: 0.06em;
-}
-.success-msg.visible { display: flex; }
-.success-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); flex-shrink: 0; }
-
-/* SIDEBAR */
-.sidebar { display: flex; flex-direction: column; gap: 0; }
-
-.sidebar-section {
-  padding: 1.5rem 0;
-  border-bottom: 1px solid var(--border);
-}
-.sidebar-section:first-child { border-top: 1px solid var(--border); }
-
-.sidebar-label {
-  font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
-  color: var(--dim); margin-bottom: 0.75rem;
-}
-.sidebar-value { font-size: 12px; color: var(--muted); line-height: 1.7; }
-
-.sidebar-link {
-  display: flex; align-items: center; gap: 10px;
-  text-decoration: none; color: var(--muted); font-size: 12px;
-  padding: 10px 0; border-bottom: 1px solid var(--border);
-  transition: color 0.2s; letter-spacing: 0.04em;
-}
-.sidebar-link:last-child { border-bottom: none; }
-.sidebar-link:hover { color: var(--text); }
-.sidebar-link-label {
-  font-size: 10px; text-transform: uppercase; letter-spacing: 0.14em;
-  color: var(--dim); width: 52px; flex-shrink: 0;
-}
-
-.response-time {
-  display: flex; align-items: center; gap: 8px;
-  font-size: 11px; color: var(--dim); margin-top: 1rem;
-}
-.pulse { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); animation: pulse 2.4s ease-in-out infinite; flex-shrink: 0; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
-
-/* FOOTER */
-footer {
-  padding: 2rem 0;
-  display: flex; justify-content: space-between; align-items: center;
-  font-size: 11px; color: var(--dim);
-  border-top: 1px solid var(--border);
-}
-
-/* ANIMATIONS */
-@keyframes heroIn {
-  from { opacity: 0; transform: translateY(16px); }
-  to   { opacity: 1; transform: none; }
-}
-.page-label { opacity: 0; animation: heroIn 0.6s ease forwards 0.1s; }
-.page-header h1 { opacity: 0; animation: heroIn 0.7s ease forwards 0.22s; }
-.page-sub { opacity: 0; animation: heroIn 0.6s ease forwards 0.36s; }
-.form-layout { opacity: 0; animation: heroIn 0.7s ease forwards 0.48s; }
-
-/* RESPONSIVE */
-@media (max-width: 720px) {
-  .form-layout { grid-template-columns: 1fr; gap: 3rem; }
-  .sidebar { border-top: 1px solid var(--border); padding-top: 2rem; }
-  .nav-links { display: none; }
-}
-</style>
+<link rel="stylesheet" href="styles.css"/>
+<link rel="stylesheet" href="contact.css"/>
 </head>
 <body>
-<nav>
-  <div class="nav-inner">
-    <a href="index.html" class="nav-sig">// JORDAN_CASTLE</a>
-    <ul class="nav-links">
-      <li><a href="index.html#expertise">Expertise</a></li>
-      <li><a href="index.html#research">Research</a></li>
-      <li><a href="index.html#about">About</a></li>
-      <li><a href="contact.html" class="active">Contact</a></li>
-    </ul>
-  </div>
-</nav>
 
 <div class="container">
   <div class="page-header">
@@ -275,26 +28,26 @@ footer {
 
         <div class="field-group">
           <label class="field-label" for="name">Name <span>required</span></label>
-          <input class="field-input" id="name" type="text" placeholder="Your full name" autocomplete="name"/>
+          <input class="field-input" id="name" name="name" type="text" placeholder="Your full name" autocomplete="name"/>
           <div class="field-underline"></div>
         </div>
 
         <div class="field-group">
           <label class="field-label" for="email">Email <span>required</span></label>
-          <input class="field-input" id="email" type="email" placeholder="you@domain.com" autocomplete="email"/>
+          <input class="field-input" id="email" name="email" type="email" placeholder="you@domain.com" autocomplete="email"/>
           <div class="field-underline"></div>
         </div>
 
         <div class="field-group">
           <label class="field-label" for="org">Organization</label>
-          <input class="field-input" id="org" type="text" placeholder="Company, institution, or independent"/>
+          <input class="field-input" id="org" name="organization" type="text" placeholder="Company, institution, or independent"/>
           <div class="field-underline"></div>
         </div>
 
         <div class="field-group">
           <label class="field-label" for="type">Engagement Type <span>required</span></label>
           <div class="select-wrap">
-            <select class="field-select" id="type">
+            <select class="field-select" id="type" name="engagement_type">
               <option value="" disabled selected>Select one</option>
               <option>Consulting Engagement</option>
               <option>Research Collaboration</option>
@@ -310,15 +63,15 @@ footer {
         <div class="field-group">
           <label class="field-label" for="domain">Domain of Interest</label>
           <div class="select-wrap">
-            <select class="field-select" id="domain">
+            <select class="field-select" id="domain" name="domain_of_interest">
               <option value="" disabled selected>Select one</option>
               <option>Systems Architecture</option>
               <option>Structural Analysis</option>
-              <option>Game & Concept Theory</option>
+              <option>Game &amp; Concept Theory</option>
               <option>Applied System Architecture</option>
-              <option>Hardware & Firmware</option>
-              <option>Modeling & Data Analysis</option>
-              <option>RF, Spectral & Lithography</option>
+              <option>Hardware &amp; Firmware</option>
+              <option>Modeling &amp; Data Analysis</option>
+              <option>RF, Spectral &amp; Lithography</option>
               <option>Networking</option>
               <option>Multiple / Unsure</option>
             </select>
@@ -329,7 +82,7 @@ footer {
 
         <div class="field-group">
           <label class="field-label" for="message">Message <span>required</span></label>
-          <textarea class="field-textarea" id="message" placeholder="Describe what you're working on and how I can help..." maxlength="1200"></textarea>
+          <textarea class="field-textarea" id="message" name="message" placeholder="Describe what you're working on and how I can help..." maxlength="1200"></textarea>
           <div class="char-count" id="charCount">0 / 1200</div>
           <div class="field-underline"></div>
         </div>
@@ -345,6 +98,7 @@ footer {
         <span class="success-dot"></span>
         Message received. I'll be in touch within 1–2 business days.
       </div>
+      <div id="submitError" style="display:none; margin-top:1rem; font-size:12px; color:#ff6b6b; letter-spacing:0.04em;">Something went wrong — please try again or reach out directly.</div>
     </div>
 
     <!-- SIDEBAR -->
@@ -358,7 +112,7 @@ footer {
         </a>
         <a href="https://linkedin.com/in/jordan-castle-512878145" target="_blank" class="sidebar-link">
           <span class="sidebar-link-label">LinkedIn</span>
-          linkedin.com/in/jordan-castle
+          linkedin.com/in/jordan_castle
         </a>
         <a href="https://github.com/PonderWander" target="_blank" class="sidebar-link">
           <span class="sidebar-link-label">GitHub</span>
@@ -387,6 +141,7 @@ footer {
         <div class="sidebar-label">Not a fit</div>
         <div class="sidebar-value">Unsolicited pitches, recruiting agencies, or projects outside my domains.</div>
       </div>
+
     </div>
   </div>
 </div>
@@ -396,143 +151,7 @@ footer {
     <span>// JORDAN_CASTLE — Systems &amp; Theory</span>
   </footer>
 </div>
-<script>
-const msgField = document.getElementById('message');
-const charCount = document.getElementById('charCount');
 
-// 🔧 Toggle encryption on/off
-const USE_ENCRYPTION = false;
-
-// ----------------------------
-// Character counter (unchanged)
-// ----------------------------
-msgField.addEventListener('input', () => {
-  const len = msgField.value.length;
-  charCount.textContent = len + ' / 1200';
-  charCount.classList.toggle('warn', len > 1000);
-});
-
-// ----------------------------
-// Payload processor (SWAPPABLE)
-// ----------------------------
-async function processPayload(payload) {
-  if (!USE_ENCRYPTION) {
-    // plaintext mode (still structured)
-    return {
-      message: JSON.stringify(payload),
-      encrypted: false
-    };
-  }
-
-  // encryption mode (plug in later if needed)
-  await sodium.ready;
-
-  const publicKey = sodium.from_base64("YOUR_KEY");
-  const bytes = sodium.from_string(JSON.stringify(payload));
-  const encrypted = sodium.crypto_box_seal(bytes, publicKey);
-
-  return {
-    message: sodium.to_base64(encrypted),
-    encrypted: true
-  };
-}
-
-// ----------------------------
-// Main submit handler
-// ----------------------------
-async function handleSubmit() {
-  const name  = document.getElementById('name').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const type  = document.getElementById('type').value;
-  const msg   = document.getElementById('message').value.trim();
-
-  // validation (unchanged)
-  if (!name || !email || !type || !msg) {
-    const fields = [
-      { id: 'name', val: name },
-      { id: 'email', val: email },
-      { id: 'type', val: type },
-      { id: 'message', val: msg }
-    ];
-
-    fields.forEach(f => {
-      if (!f.val) {
-        const el = document.getElementById(f.id);
-        el.closest('.field-group')
-          .querySelector('.field-label')
-          .style.color = '#ff6b6b';
-        el.focus();
-      }
-    });
-    return;
-  }
-
-  const btn = document.getElementById('submitBtn');
-  btn.disabled = true;
-  btn.textContent = 'Processing...';
-
-  try {
-    // ----------------------------
-    // Structured payload (KEEP THIS)
-    // ----------------------------
-    const payload = {
-      nonce: crypto.randomUUID(),
-      timestamp: Date.now(),
-
-      name,
-      email,
-      type,
-      message: msg
-    };
-
-    // ----------------------------
-    // Process (encrypt or not)
-    // ----------------------------
-    const result = await processPayload(payload);
-
-    btn.textContent = 'Sending...';
-
-    // ----------------------------
-    // Send (unchanged transport layer)
-    // ----------------------------
-    const formData = new FormData();
-    formData.append("message", result.message);
-    formData.append("meta", JSON.stringify({
-      encrypted: result.encrypted,
-      version: 1
-    }));
-
-    await fetch("https://formspree.io/f/YOURID", {
-      method: "POST",
-      body: formData
-    });
-
-    document.getElementById('successMsg').classList.add('visible');
-    btn.style.display = 'none';
-
-  } catch (err) {
-    console.error(err);
-    btn.disabled = false;
-    btn.textContent = 'Send';
-    alert("Failed to send message.");
-  }
-}
-
-// ----------------------------
-// Animations (unchanged)
-// ----------------------------
-window.addEventListener('DOMContentLoaded', () => {
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting) {
-        setTimeout(() => entry.target.classList.add('visible'), i * 90);
-        obs.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
-
-  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
-});
-</script>
+<script src="contact.js"></script>
 </body>
 </html>

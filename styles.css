@@ -238,12 +238,46 @@ footer { padding: 2rem 0; display: flex; justify-content: space-between; align-i
 }
 .paper-error { font-size: 12px; color: var(--muted); padding: 1.5rem 0; }
 .paper-count-label { font-size: 11px; color: var(--dim); letter-spacing: 0.08em; }
-.abstract-body { font-size: 12px; color: var(--muted); line-height: 1.7; max-width: 600px; }
-.abstract-short { display: inline; }
-.abstract-full  { display: none; }
-.abstract-toggle {
-  background: none; border: none; cursor: pointer;
-  color: var(--accent2); font-family: var(--mono); font-size: 11px;
-  letter-spacing: 0.06em; padding: 0; margin-left: 4px; transition: opacity 0.2s;
+/* ── ABSTRACT details/summary ── */
+.abstract-body {
+  font-size: 12px; color: var(--muted); line-height: 1.7;
+  max-width: 600px; margin-top: 0.5rem;
 }
-.abstract-toggle:hover { opacity: 0.7; }
+.abstract-body summary {
+  cursor: pointer;
+  list-style: none;
+  display: inline;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+.abstract-body summary::-webkit-details-marker { display: none; }
+/* 'more' shown inline after summary text when closed */
+.abstract-body:not([open]) summary::after {
+  content: '... more';
+  color: var(--accent2);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  margin-left: 4px;
+  transition: opacity 0.2s;
+}
+.abstract-body:not([open]) summary:hover::after { opacity: 0.7; }
+/* full text flows as continuation — no block gap */
+.abstract-body p {
+  display: inline;
+  margin: 0;
+  padding: 0;
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.7;
+}
+/* 'less' is a real span inside <p> — pseudo-elements can't be clicked */
+.abstract-less {
+  color: var(--accent2);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  margin-left: 4px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+.abstract-less:hover { opacity: 0.7; }

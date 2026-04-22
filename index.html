@@ -8,7 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,300;0,400;0,500;1,300&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="styles.css"/>
 </head>
-<body>
+
 <nav>
   <div class="nav-inner">
     <span class="nav-sig">// JORDAN_CASTLE</span>
@@ -19,6 +19,16 @@
       <li><a href="#contact">Contact</a></li>
       <li><a href="#" onclick="openArcade();return false;" style="color:var(--accent3);">Fun</a></li>
     </ul>
+    <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileNav()" aria-label="Menu">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+  <div class="nav-mobile-menu" id="navMobileMenu">
+    <a href="#expertise" onclick="closeMobileNav()">Expertise</a>
+    <a href="#research"  onclick="closeMobileNav()">Research</a>
+    <a href="#about"     onclick="closeMobileNav()">About</a>
+    <a href="#contact"   onclick="closeMobileNav()">Contact</a>
+    <a href="#" onclick="closeMobileNav();openArcade();return false;" class="nav-mobile-fun">// Fun — Play Cataga</a>
   </div>
 </nav>
 
@@ -52,13 +62,14 @@
   </div>
 </div>
 
-<div class="container">
-  <section class="hero">
+<div class="container" id="expertise">
+  <section>
     <div class="section-header">
       <span class="section-num">01</span>
       <span class="section-title">Domains of Work</span>
     </div>
     <div class="expertise-grid">
+
       <div class="expertise-card fade-up">
         <svg class="expertise-icon" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
           <rect x="2" y="2" width="12" height="12" stroke="#4effc4" stroke-width="1.5"/>
@@ -219,6 +230,7 @@
           <span class="tag">Interaction Congruency</span>
         </div>
       </div>
+
     </div>
   </section>
 </div>
@@ -230,31 +242,121 @@
       <span class="section-title">Selected Research</span>
     </div>
     <div class="paper-list" id="paperList">
-        <div class="paper-item" data-paper>
-            <div>
-                <div class="paper-meta">SSRN · 2026 · Economic Theory</div>
-                <div class="paper-title">Household Infrastructure Stabilization as a Structural Economic Resilience Mechanism: A Framework for Distributed Infrastructure and Energy Systems</div>
-                    <div class="abstract-body">
-                        <span class="abstract-short">This paper introduces a conceptual framework examining whether integration between housing infrastructure and localized energy production may function as a structural stabilizing mechanism within modern economies...
-                        </span>
-                        <button class="abstract-toggle" onclick="toggleAbstract(this)">more</button>
-                        <span class="abstract-full"> This paper introduces a conceptual framework examining whether integration between housing infrastructure and localized energy production may function as a structural stabilizing mechanism within modern economies.  Household financial fragility is often influenced by volatility in essential expenditures, particularly housing and energy costs, which can act as channels for broader economic shock transmission.  The framework explores whether reducing exposure to such volatility through infrastructure design could contribute to more stable household balance sheets and in turn enhance macroeconomic resilience.
-                            Using a circulation-based perspective, the paper describes a "stability flywheel" in which improved predictability at the household level supports more consistent participation in local economic activity, reinforces community-level resilience and reduces amplification of downturns.  It also considers potential interactions between distributed residential energy systems and evolving grid demands in regions experiencing growth in electricity-intensive infrastructure.
-                            The objective is not to prescribe specific policies, but to outline a set of mechanisms and research questions that may inform further empirical and modeling work at the intersection of household finance, infrastructure economics and financial stability. 
-                        </span>
-                    </div>
-                    <a href="https://papers.ssrn.com/sol3/papers.cfm?abstract_id=6174978" class="paper-link" target="_blank">Read on SSRN ↗</a>
-                </div>
-            </div>
-            <div style="margin-top:2rem; display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
-                <button class="btn btn-secondary" id="showMoreBtn" onclick="showMorePapers()" style="display:none;">Show More Papers</button>
-                <a href="https://papers.ssrn.com/sol3/cf_dev/AbsByAuth.cfm?per_id=10215177" target="_blank" class="btn btn-secondary">All papers on SSRN →</a>
-                <span class="paper-count-label" id="paperCountLabel"></span>
-            </div>
-        </div>    
+
+      <div class="paper-item fade-up">
+        <div>
+          <div class="paper-meta">SSRN · 2026 · Economic Theory</div>
+          <div class="paper-title">Household Infrastructure Stabilization as a Structural Economic Resilience Mechanism: A Framework for Distributed Infrastructure and Energy Systems</div>
+          <details class="abstract-body">
+            <summary> This paper introduces a conceptual framework examining whether integration between housing infrastructure and localized energy production may function as a structural stabilizing mechanism within modern economies.</summary><p>Household financial fragility is often influenced by volatility in essential expenditures, particularly housing and energy costs, which can act as channels for broader economic shock transmission.  The framework explores whether reducing exposure to such volatility through infrastructure design could contribute to more stable household balance sheets and in turn enhance macroeconomic resilience.
+
+Using a circulation-based perspective, the paper describes a "stability flywheel" in which improved predictability at the household level supports more consistent participation in local economic activity, reinforces community-level resilience and reduces amplification of downturns.  It also considers potential interactions between distributed residential energy systems and evolving grid demands in regions experiencing growth in electricity-intensive infrastructure.
+
+The objective is not to prescribe specific policies, but to outline a set of mechanisms and research questions that may inform further empirical and modeling work at the intersection of household finance, infrastructure economics and financial stability.<span class="abstract-less" onclick="this.closest('details').removeAttribute('open')"> less</span></p>
+          </details>
+          <a href="https://dx.doi.org/10.2139/ssrn.6174978" class="paper-link" target="_blank">Read on SSRN ↗</a>
+        </div>
+      </div>
+
+      <!-- Add more papers: copy the paper-item block above, no IDs needed -->
+
+      <div class="paper-item fade-up">
+        <div>
+          <div class="paper-meta">SSRN · 2026 · Economic Theory</div>
+          <div class="paper-title">The Cost of Energy Dependency: Volatility, Chokepoints and the Case for Distributed Resilience</div>
+          <details class="abstract-body">
+            <summary> Recent disruptions in global energy markets have highlighted the continued sensitivity of advanced economies to geographically concentrated supply systems.</summary><p>While such events are typically interpreted through the lens of supply-demand imbalances and market repricing, they also reveal a deeper structural dynamic: the transmission of upstream infrastructure constraints into household and macroeconomic volatility. It also examines the economic implications of energy dependency in chokepoint-constrained systems, using recent market behavior as a reference point. It introduces the concept of resilience parity, defined as the condition under which the cumulative cost of volatility approaches the capital required to reduce exposure to that volatility. By comparing the scale of energy price shocks with the investment required for distributed, householdlevel energy systems, the analysis suggests that a portion of current economic expenditure represents an implicit cost of dependency. The findings support a re framing of distributed energy infrastructure not only as a sustainability measure, but as a mechanism for reducing systemic risk and stabilizing economic circulation. <span class="abstract-less" onclick="this.closest('details').removeAttribute('open')"> less</span></p>
+          </details>
+          <a href="https://dx.doi.org/10.2139/ssrn.6541158" class="paper-link" target="_blank">Read on SSRN ↗</a>
+        </div>
+      </div>
+
+      <div class="paper-item fade-up">
+        <div>
+          <div class="paper-meta">SSRN · 2026 · Economic Theory</div>
+          <div class="paper-title">Household Infrastructure, Volatility Exposure and the Alignment of Capital with Economic Stability</div>
+          <details class="abstract-body">
+            <summary>  This paper examines whether investments that reduce household-level exposure to volatility in essential expenditures may support financial structures in which private return and systemic stability are partially aligned.</summary><p>Prior work has identified household cost variability, particularly in energy, as a transmission mechanism through which instability propagates across economic layer.  Subsequent analysis has shown that these dynamics are observable in real-world energy market conditions.
+
+Building on this foundation, the present analysis considers the implications for capital allocation.  It proposes a conceptual class of instruments, referred to as  Commonwealth Stability Bonds, in which capital is deployed toward distributed, household-linked infrastructure that reduces exposure to price volatility.  the resulting stabilization may contribute to the conditions under which financial returns are sustained.
+
+The paper situates this framework within existing literature on energy price shocks, household consumption behavior and distributed energy systems and argues that the apparent distinction between altruistic and self-interested investment may be structurally overstated in contexts where infrastructure influences economic stability.  The objective is not to define a fully specified instrument, but to outline the conditions under which stability itself may serve as a partial basis for return. <span class="abstract-less" onclick="this.closest('details').removeAttribute('open')"> less</span></p>
+          </details>
+          <a href="https://dx.doi.org/10.2139/ssrn.6545838" class="paper-link" target="_blank">Read on SSRN ↗</a>
+        </div>
+      </div>
+
+      <div class="paper-item fade-up">
+        <div>
+          <div class="paper-meta">SSRN · 2026 · Economic Theory</div>
+          <div class="paper-title">OZERP: A Framework for Aligning Capital Allocation with Real-World Economic Outcomes</div>
+          <details class="abstract-body">
+            <summary>  Economic programs designed to address structural challenges such as housing instability, cost-of-living pressure and resource access are frequently implemented through intermediated systems of capital allocation.</summary><p>  While these systems enable scale and coordination, they are prone to outcome detachment, wherein capital deployment diverges from measurable improvements in underlying conditions.  This paper introduces the concept of intermediation drift, a structural mechanism through which intermediary layers optimize for proxy metrics, such as disbursement and compliance, rather than realized outcomes.
+
+To address this limitation, the paper presents OZERP (Opportunity Zone Enrichment & Resilience Pilot), a framework that links capital allocation to real-world economic conditions through the integration of economic stress, system elasticity and behavioral response.  Under this model, instability is reframed as a function of constrained adaptability rather than insufficient activity.  OZERP operationalizes this perspective through a pilot-based structure that prioritizes elasticity-expanding interventions, including infrastructure investment, small business capital access and housing rehabilitation.
+
+Central to the framework is a multi-layer measurement system that connects capital flows to changes in cost-of-living conditions and participant-level response, enabling real-time evaluation of whether interventions reduce constraint and stabilize behavior.  By shifting program evaluation from allocation efficiency to outcome alignment, OZERP provides a structured approach for reducing systemic drift and improving the effectiveness of economic interventions.
+
+The findings suggest that policy effectiveness is determined not by the volume of resources deployed, but by the degree to which those resources alter the conditions in which decisions are made.  This work contributes a unified framework for diagnosing, measuring and addressing outcome detachment in intermediated economic systems. <span class="abstract-less" onclick="this.closest('details').removeAttribute('open')"> less</span></p>
+          </details>
+          <a href="https://dx.doi.org/10.2139/ssrn.6558304" class="paper-link" target="_blank">Read on SSRN ↗</a>
+        </div>
+      </div>
+
+      <div class="paper-item fade-up">
+        <div>
+          <div class="paper-meta">SSRN · 2026 · Economic Theory</div>
+          <div class="paper-title">A Formal Specification of the SER (Stress-Elasticity-Reaction) Framework</div>
+          <details class="abstract-body">
+            <summary>   This note presents a formal specification of the Stress-Elasticity-Reaction (SER) framework and evaluates its directional behavior using a representative U.S. household dataset with an energy-adjusted test case.</summary><p>The framework models behavioral response as a function of economic constraint (stress) and adaptive capacity (elasticity), extending standard utility formulations to incorporate condition-based inputs.  A reduced-form operational method is constructed using publicly available data on household spending, energy costs, credit conditions and solar-adopter characteristics.
+
+Empirical inputs are mapped into the SER structure to generate comparative outputs between a baseline consumer case and a solar-adjusted scenario.  Results show consistent directional changes, including increased elasticity, reduced reaction and improved utility proxies under lower energy burden and higher credit-quality conditions.  A compact system expression is derived to represent the relationship between stress, elasticity and response.
+
+The findings demonstrate that the SER framework is tractable, empirically grounded and responsive to real-world inputs.  While not establishing causality, the results are consistent with a structure in which reductions in recurring constraint and increases in adaptive capacity produce measurable improvements in both economic and behavioral stability.<span class="abstract-less" onclick="this.closest('details').removeAttribute('open')"> less</span></p>
+          </details>
+          <a href="https://dx.doi.org/10.2139/ssrn.6561918" class="paper-link" target="_blank">Read on SSRN ↗</a>
+        </div>
+      </div>
+
+      <div class="paper-item fade-up">
+        <div>
+          <div class="paper-meta">SSRN · 2026 · Economic Theory</div>
+          <div class="paper-title">A Public Capital Formation Engine for Consumer Stability: A Distributed Systems Approach</div>
+          <details class="abstract-body">
+            <summary>Modern economic systems exhibit persistent instability despite high levels of capital formation, technological capacity and institutional sophistication.</summary><p> This instability is commonly addressed through downstream interventions that adjust demand, redistribute resources or expand credit. However, such approaches often operate within structural conditions that continue to generate volatility, limiting their long-term effectiveness. This paper advances a systems-level framework in which economic instability is understood as an emergent property of two interacting dynamics: the transmission of upstream volatility through essential cost structures and the decoupling of capital allocation from realized outcomes within intermediated systems. Households, positioned at the intersection of these dynamics, function as primary transmission nodes through which volatility propagates into broader economic behavior (Castle, 2026c). Building on prior work formalizing the relationship between stress, elasticity and behavioral response (Castle, 2026a) and identifying structural drift in intermediated capital systems (Castle, 2026b), this paper introduces a distributed public capital formation engine as a mechanism for realigning economic participation with system stability. The proposed model reframes individuals not solely as consumers of capital, but as participants in its formation, with value accrual linked to continuous engagement within infrastructure and production systems. Within this framework, economic capacity is defined as the ability to operate under conditions of reduced constraint and predictable cost exposure. Such capacity is shown to be a prerequisite for sustained participation, and by extension, for the functional realization of individual agency within the economic system (Sen, 1999). Stability, in this context, is not imposed through centralized control but emerges from the distributed expansion of adaptive capacity across participating nodes (Meadows, 2008; Sterman, 2000). <span class="abstract-less" onclick="this.closest('details').removeAttribute('open')"> less</span></p>
+          </details>
+          <a href="https://dx.doi.org/10.2139/ssrn.6571439" class="paper-link" target="_blank">Read on SSRN ↗</a>
+        </div>
+      </div>
+
+      <div class="paper-item fade-up">
+        <div>
+          <div class="paper-meta">SSRN · 2026 · Economic Theory</div>
+          <div class="paper-title">Participation-Coupled Stable Capital Theory</div>
+          <details class="abstract-body">
+            <summary>Advanced economies have achieved historically high levels of capital formation, technological capacity, and institutional sophistication.</summary><p> Despite these advances, they continue to exhibit persistent patterns of economic instability, including cyclical volatility, uneven regional stress, and recurring disruptions in household financial conditions. Conventional approaches to stabilization, including monetary policy, fiscal intervention, and credit expansion, have demonstrated effectiveness in moderating aggregate outcomes, yet they frequently operate after instability has already propagated through the system. This pattern suggests a structural limitation in prevailing analytical frameworks. Much of modern macroeconomic analysis focuses on aggregate variables such as output, inflation, and employment, treating instability as a function of demand fluctuations or financial imbalances. While these factors are important, they may obscure underlying mechanisms through which instability originates and propagates across economic systems. In particular, two dynamics appear consistently but are rarely modeled jointly: the transmission of external volatility through essential cost structures, and the decoupling of capital allocation from realized outcomes within intermediated systems.<span class="abstract-less" onclick="this.closest('details').removeAttribute('open')"> less</span></p>
+          </details>
+          <a href="https://dx.doi.org/10.2139/ssrn.6577978" class="paper-link" target="_blank">Read on SSRN ↗</a>
+        </div>
+      </div>
+
+      <div class="paper-item fade-up">
+        <div>
+          <div class="paper-meta">SSRN · 2026 · Economic Theory</div>
+          <div class="paper-title">Targeted Elasticity Reinforcement: A Deployment Framework for Stabilizing System Dynamics</div>
+          <details class="abstract-body">
+            <summary>This paper introduces a targeting method for stabilizing economic and networked systems through targeted elasticity reinforcement.</summary><p>Building on the Stress–Elasticity–Reaction (SER) framework and a field-based formulation of imbalance (Φ = R − S), the analysis demonstrates that instability arises not from stress alone, but from the interaction between stress and diminishing absorptive capacity. Empirical and simulation results across energy, agricultural, and epidemic–market systems reveal consistent regime behavior, including lagged elasticity degradation and constraint-induced isolation. The paper proposes a priority-based targeting function to identify high-impact intervention nodes and outlines a coupled deployment strategy across critical sectors and households. Stability is achieved by maintaining elasticity above a critical threshold, enabling stress to be absorbed rather than transmitted into market-visible failure. The framework provides a scalable, mechanism-driven approach to system stabilization through reinforcement, targeting, and reinvestment dynamics.<span class="abstract-less" onclick="this.closest('details').removeAttribute('open')"> less</span></p>
+          </details>
+          <a href="https://dx.doi.org/10.2139/ssrn.6604978" class="paper-link" target="_blank">Read on SSRN ↗</a>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:2rem; display:flex; gap:1rem; align-items:center; flex-wrap:wrap;">
+      <a href="https://papers.ssrn.com/sol3/cf_dev/AbsByAuth.cfm?per_id=10215177" target="_blank" class="btn btn-secondary">All papers on SSRN →</a>
     </div>
   </section>
 </div>
+
 <div class="container" id="about">
   <section>
     <div class="section-header">
@@ -264,20 +366,18 @@
     <div class="about-grid">
       <div class="about-text fade-up">
         <p>
-           I'm a systems builder focused on uncovering how complex structures actually behave and where they fail.
+          Replace this with your bio. Be direct — who you are, what problems
+          you're drawn to, and what makes your approach distinct from others
+          working in adjacent space.
         </p>
         <p>
-          My work sits at the intersection of infrastructure, systems, economics and intelligence.  Technically, I operate
-          from the ground up.  I'm comfortable at the hardware, firmware, OS level and application layer.  I build into distributed systems,
-          data pipelines and AI-assisted tooling.  I prioritize control, observability and resilience, favoring hardened, minimal environments over abstraction-heavy 
-          approaches.            
+          Talk about the thread that connects your work across systems
+          architecture, formal analysis, and applied theory. What does the
+          whole picture look like from the inside?
         </p>
         <p>
-          I don't treat domains as isolated.  The same structural patterns show up in code, markets, networks and human systems.
-          My work is identifying those patterns, modeling them and turning them into something measurable and actionable.
-        </p>
-        <p>
-          I build to understand and once understood, to reshape.
+          If there's a sentence that captures your working philosophy — the
+          thing that shows up across everything — this is where it belongs.
         </p>
       </div>
       <div class="fade-up">
@@ -288,7 +388,7 @@
           </div>
           <div class="spec-row">
             <span class="spec-key">Based</span>
-            <span class="spec-val">GMT -5:00</span>
+            <span class="spec-val">Your Location</span>
           </div>
           <div class="spec-row">
             <span class="spec-key">Research</span>
@@ -307,6 +407,7 @@
     </div>
   </section>
 </div>
+
 <div class="container" id="contact">
   <section style="border-bottom:none;">
     <div class="section-header">
@@ -317,9 +418,8 @@
       <div class="fade-up">
         <h2 class="contact-heading">Let's work on something that matters.</h2>
         <p class="contact-sub">Consulting engagements, research collaboration, advisory roles, or a conversation about systems and theory.</p>
-        <a href="./contact.html" class="btn btn-primary"><span class="__cf_email__">[contact&#160;form]</span> →</a>
+        <a href="contact.html" class="btn btn-primary"><span class="__cf_email__" >[email&#160;protected]</span> →</a>
       </div>
-      <span id="email"></span>
       <div class="contact-links fade-up">
         <a href="https://papers.ssrn.com/sol3/cf_dev/AbsByAuth.cfm?per_id=10215177" target="_blank" class="contact-link">
           <span class="contact-link-label">SSRN</span>
@@ -327,22 +427,29 @@
         </a>
         <a href="https://linkedin.com/in/jordan-castle-512878145" target="_blank" class="contact-link">
           <span class="contact-link-label">LinkedIn</span>
-          linkedin.com/in/jordan-castle
+          linkedin.com/in/jordan_castle
         </a>
         <a href="https://github.com/PonderWander" target="_blank" class="contact-link">
           <span class="contact-link-label">GitHub</span>
           github.com/PonderWander
         </a>
+        <a href="contact.html" class="contact-link">
+          <span class="contact-link-label">Email</span>
+          <span class="__cf_email__" >[email&#160;protected]</span>
+        </a>
       </div>
     </div>
   </section>
 </div>
-<script src="main.js"></script>
+
 <div class="container">
   <footer>
-    <span>// Jordan Castle — Systems &amp; Theory</span>
+    <span>// JORDAN_CASTLE — Systems &amp; Theory</span>
+    <span>Built lean.</span>
   </footer>
 </div>
+
+<script src="main.js"></script>
 
 <!-- ── CATAGA OVERLAY ──────────────────────────────────────────────────── -->
 <div id="arcadeOverlay" style="

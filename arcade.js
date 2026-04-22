@@ -430,7 +430,7 @@ function update(dt) {
   });
   bugs = bugs.filter(b => b.health > 0);
 
-  if (cat.invincible <= 0) {
+  if (cat.invincible <= 0 && !cat.dashing) {
     bugBullets.forEach(b => {
       const cx=cat.x-CAT_W*CAT_PX/2, cy=cat.y;
       if (b.x>cx && b.x<cx+CAT_W*CAT_PX && b.y>cy && b.y<cy+CAT_H*CAT_PX) {
@@ -470,13 +470,28 @@ function update(dt) {
 
   const catCX=cat.x, catCY=cat.y+CAT_H*CAT_PX/2;
   yarnBalls.forEach(y => { y.angle += YARN_ORBIT_SPD * dt; });
-  yarnBalls.forEach(y => {
-    const yx=catCX+Math.cos(y.angle)*y.r, yy=catCY+Math.sin(y.angle)*y.r;
+
+  // yarn shields the cat — absorb one hit per collision, remove a yarn ball each time
+  if (cat.invincible <= 0 && !cat.dashing && yarnBalls.length > 0) {
     bugBullets.forEach(b => {
-      if (Math.hypot(b.x-yx, b.y-yy) < 10) { emit(b.x,b.y,C.accent3,6); b.x=-999; }
+      if (yarnBalls.length === 0) return;
+      const cx=cat.x-CAT_W*CAT_PX/2, cy=cat.y;
+      if (b.x>cx && b.x<cx+CAT_W*CAT_PX && b.y>cy && b.y<cy+CAT_H*CAT_PX) {
+        b.y=H+99;
+        emit(b.x, b.y, C.accent3, 12);
+        yarnBalls.pop();
+      }
     });
-  });
-  bugBullets = bugBullets.filter(b => b.x > -900);
+    bugs.filter(b => b.diving).forEach(b => {
+      if (yarnBalls.length === 0) return;
+      if (Math.hypot(b.x-cat.x, b.y-cat.y) < 20) {
+        emit(cat.x, cat.y, C.accent3, 12);
+        yarnBalls.pop();
+        b.health=0;
+        if (diveBug===b) diveBug=null;
+      }
+    });
+  }
 
   if (bugs.length === 0) spawnWave();
 
