@@ -573,62 +573,6 @@ The objective is not to prescribe specific policies, but to outline a set of mec
   </footer>
 </div>
 <script>
-window.addEventListener('DOMContentLoaded', () => {
-  const obs = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting) {
-        setTimeout(() => entry.target.classList.add('visible'), i * 90);
-        obs.unobserve(entry.target);
-      }
-    });
-  }, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
-  document.querySelectorAll('.fade-up').forEach(el => obs.observe(el));
-});
-
-// paper show/hide toggle
-function toggleAbstract(btn) {
-  const body  = btn.closest('.abstract-body');
-  const short = body.querySelector('.abstract-short');
-  const full  = body.querySelector('.abstract-full');
-  const open  = full.style.display === 'inline';
-  short.style.display = open ? 'inline' : 'none';
-  full.style.display  = open ? 'none'   : 'inline';
-  btn.textContent     = open ? 'more'   : 'less';
-}
-
-// paginated show more
-const PAGE_SIZE = 3;
-let shownCount = 0;
-
-function initPapers() {
-  const papers = Array.from(document.querySelectorAll('[data-paper]'));
-  papers.forEach((p, i) => p.style.display = i < PAGE_SIZE ? '' : 'none');
-  shownCount = Math.min(PAGE_SIZE, papers.length);
-  updatePaperControls(papers);
-}
-
-function showMorePapers() {
-  const papers = Array.from(document.querySelectorAll('[data-paper]'));
-  const next = papers.slice(shownCount, shownCount + PAGE_SIZE);
-  next.forEach(p => {
-    p.style.display = '';
-    p.classList.add('fade-up');
-    requestAnimationFrame(() => setTimeout(() => p.classList.add('visible'), 80));
-  });
-  shownCount += next.length;
-  updatePaperControls(papers);
-}
-
-function updatePaperControls(papers) {
-  const btn   = document.getElementById('showMoreBtn');
-  const label = document.getElementById('paperCountLabel');
-  btn.style.display = shownCount < papers.length ? 'inline-flex' : 'none';
-  label.textContent = `Showing ${shownCount} of ${papers.length}`;
-}
-
-initPapers(); 
-</script>
-<script>
 function openArcade(){ document.getElementById('arcadeOverlay').style.display='flex'; startGame(); }
 function closeArcade(){ document.getElementById('arcadeOverlay').style.display='none'; stopGame(); }
 document.addEventListener('keydown',e=>{ if(e.key==='Escape') closeArcade(); });
@@ -648,12 +592,17 @@ let score,lives,wave,gameOver,frameCount;
 let bugDir,bugDropping;
 let diveBug=null;
 
-const BULLET_SPEED   = 7;    // fixed, no runaway
-const BUG_BULLET_SPD = 3.5;
+const BULLET_SPEED   = 9;    // slightly faster player shot
+const BUG_BULLET_SPD = 4.2;
 const PAGE_SIZE_BUGS = { cols:9, rows:4 };
 const DASH_COOLDOWN  = 300;  // frames @ 60fps ≈ 5s
 const DASH_SPEED     = 18;
 const DASH_FRAMES    = 14;
+const MAX_YARN       = 3;
+const YARN_ORBIT_R   = 28;
+const YARN_ORBIT_SPD = 0.045;
+const PICKUP_SPD     = 0.6;
+let pickups=[], yarnBalls=[];
 
 function stopGame(){ gameRunning=false; if(raf) cancelAnimationFrame(raf); }
 
@@ -667,7 +616,7 @@ function startGame(){
   cat={ x:W/2, y:H-48, speed:4, radius:14,
         dashCd:0, dashing:false, dashDir:0, dashFrames:0,
         invincible:0, shootCd:22 };
-  bullets=[]; bugs=[]; bugBullets=[]; particles=[];
+  bullets=[]; bugs=[]; bugBullets=[]; particles=[]; pickups=[]; yarnBalls=[];
   score=0; lives=3; wave=0; gameOver=false;
   bugDir=1; bugDropping=false; frameCount=0; diveBug=null;
   // clear any held keys from previous game
@@ -805,12 +754,12 @@ function update(){
   if(cat.invincible>0) cat.invincible--;
   if(cat.shootCd>0) cat.shootCd--;
 
-  // cat bullets — capped speed
-  bullets=bullets.filter(b=>b.y>-10);
+  // cat bullets — hard cull at all bounds
+  bullets=bullets.filter(b=>b.y>0&&b.y<H&&b.x>0&&b.x<W);
   bullets.forEach(b=>{ b.y-=BULLET_SPEED; });
 
-  // bug bullets
-  bugBullets=bugBullets.filter(b=>b.y<H+10);
+  // bug bullets — hard cull at all bounds
+  bugBullets=bugBullets.filter(b=>b.y>0&&b.y<H&&b.x>0&&b.x<W);
   bugBullets.forEach(b=>{ b.x+=b.vx; b.y+=b.vy; });
 
   // formation drift
@@ -843,7 +792,7 @@ function update(){
     if(b.diving){
       b.diveVy+=0.06;
       b.x+=b.diveVx; b.y+=b.diveVy;
-      if(b.y>H+50){
+      if(b.y>H+50||b.x<-50||b.x>W+50){
         b.diving=false; b.x=b.baseX; b.y=-50;
         b.diveVx=0; b.diveVy=0;
         if(diveBug===b) diveBug=null;
@@ -907,6 +856,50 @@ function update(){
   // particles
   particles.forEach(p=>{ p.x+=p.vx; p.y+=p.vy; p.vx*=0.9; p.vy*=0.9; p.life-=0.025; });
   particles=particles.filter(p=>p.life>0);
+
+  // spawn yarn pickup — random chance, respects max
+  if(frameCount%380===0 && pickups.length<2 && yarnBalls.length<MAX_YARN){
+    pickups.push({
+      x: 40+Math.random()*(W-80),
+      y: -12,
+      spin: 0
+    });
+  }
+
+  // move pickups down, collect if cat touches
+  pickups.forEach(p=>{ p.y+=PICKUP_SPD; p.spin+=0.08; });
+  pickups=pickups.filter(p=>{
+    if(p.y>H+20) return false; // fell off screen
+    const dist=Math.hypot(p.x-cat.x, p.y-(cat.y+CAT_H*CAT_PX/2));
+    if(dist<18 && yarnBalls.length<MAX_YARN){
+      // collected — add a new orbiting yarn ball
+      yarnBalls.push({
+        angle: (yarnBalls.length*(Math.PI*2/MAX_YARN)),
+        r: YARN_ORBIT_R + yarnBalls.length*8
+      });
+      emit(p.x,p.y,C.accent3,14);
+      score+=300;
+      return false;
+    }
+    return true;
+  });
+
+  // yarn balls orbit cat, intercept bug bullets
+  const catCX=cat.x, catCY=cat.y+CAT_H*CAT_PX/2;
+  yarnBalls.forEach(y=>{ y.angle+=YARN_ORBIT_SPD; });
+
+  // yarn intercepts bug bullets
+  yarnBalls.forEach(y=>{
+    const yx=catCX+Math.cos(y.angle)*y.r;
+    const yy=catCY+Math.sin(y.angle)*y.r;
+    bugBullets.forEach(b=>{
+      if(Math.hypot(b.x-yx,b.y-yy)<10){
+        emit(b.x,b.y,C.accent3,6);
+        b.x=-999; // mark for removal
+      }
+    });
+  });
+  bugBullets=bugBullets.filter(b=>b.x>-900);
 
   // next wave
   if(bugs.length===0) spawnWave();
@@ -972,6 +965,48 @@ function draw(){
     ctx.shadowBlur=0;
   });
 
+  // yarn ball pickups (falling)
+  pickups.forEach(p=>{
+    ctx.save(); ctx.translate(p.x,p.y); ctx.rotate(p.spin);
+    // yarn ball — concentric pixel rings in accent3
+    ctx.fillStyle=C.accent3;
+    const s=2;
+    [[-2,-4],[0,-5],[2,-4],[4,-2],[5,0],[4,2],[2,4],[0,5],[-2,4],[-4,2],[-5,0],[-4,-2],
+     [-1,-2],[1,-2],[2,-1],[2,1],[1,2],[-1,2],[-2,1],[-2,-1],[0,0]
+    ].forEach(([dx,dy])=>ctx.fillRect(dx*s,dy*s,s,s));
+    // glow
+    ctx.shadowBlur=8; ctx.shadowColor=C.accent3;
+    ctx.fillRect(-s,0,s,s);
+    ctx.shadowBlur=0;
+    ctx.restore();
+  });
+
+  // yarn balls orbiting cat
+  const catCX=cat.x, catCY=cat.y+CAT_H*CAT_PX/2;
+  yarnBalls.forEach(y=>{
+    const yx=catCX+Math.cos(y.angle)*y.r;
+    const yy=catCY+Math.sin(y.angle)*y.r;
+    // orbit trail
+    for(let t=1;t<=4;t++){
+      const ta=y.angle-t*0.18;
+      const tx=catCX+Math.cos(ta)*y.r, ty=catCY+Math.sin(ta)*y.r;
+      ctx.globalAlpha=0.15*t;
+      ctx.fillStyle=C.accent3;
+      ctx.fillRect(tx-2,ty-2,4,4);
+    }
+    ctx.globalAlpha=1;
+    // yarn pixel ball
+    ctx.save(); ctx.translate(yx,yy); ctx.rotate(y.angle*2);
+    ctx.fillStyle=C.accent3;
+    ctx.shadowBlur=10; ctx.shadowColor=C.accent3;
+    const s=2;
+    [[0,-3],[2,-2],[3,0],[2,2],[0,3],[-2,2],[-3,0],[-2,-2],
+     [0,-1],[1,0],[0,1],[-1,0]
+    ].forEach(([dx,dy])=>ctx.fillRect(dx*s,dy*s,s,s));
+    ctx.shadowBlur=0;
+    ctx.restore();
+  });
+
   // cat (blink when invincible)
   const blinkOk=cat.invincible<=0||Math.floor(cat.invincible/8)%2===0;
   if(blinkOk){
@@ -1007,6 +1042,9 @@ function draw(){
   ctx.fillStyle=C.accent; ctx.font='500 12px IBM Plex Mono';
   ctx.fillText('SCORE  '+String(score).padStart(6,'0'), 16, 26);
   ctx.fillText('WAVE   '+wave, 16, 44);
+  // yarn ball count
+  ctx.fillStyle=C.accent3;
+  ctx.fillText('YARN   '+yarnBalls.length+'/'+MAX_YARN, 16, 62);
   // lives as cat icons (tiny)
   for(let i=0;i<lives;i++){
     drawSprite(CAT_SPRITE,1, W-20-(i*18), 12, C.accent, false);
