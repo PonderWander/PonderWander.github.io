@@ -1,0 +1,30 @@
+name: Update SSRN Papers
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # every Monday at 6am UTC
+  workflow_dispatch:       # allow manual trigger from Actions tab
+
+jobs:
+  fetch-papers:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Fetch and parse SSRN RSS
+        run: node fetch_papers.js
+
+      - name: Commit papers.json if changed
+        run: |
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add papers.json
+          git diff --cached --quiet || git commit -m "chore: update papers.json from SSRN RSS"
+          git push
