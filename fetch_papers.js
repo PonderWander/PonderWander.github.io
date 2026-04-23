@@ -2,13 +2,12 @@
 // Run with: node fetch_papers.js
 // Requires Node 18+ (built-in fetch) — no dependencies needed
 
-const SSRN_AUTHOR_ID = '10215177'; // replace with your SSRN author ID
+const SSRN_AUTHOR_ID = 'YOURID'; // replace with your SSRN author ID
 const RSS_URL        = `https://api.ssrn.com/content/v1/authors/${SSRN_AUTHOR_ID}/papers/rss`;
 const OUTPUT_FILE    = './papers.json';
 const SUMMARY_LENGTH = 280; // chars before abstract is split into summary/full
 
-import { writeFileSync } from 'fs';
-import { parseString }   from 'xml2js'; // not used — we parse manually below
+const { writeFileSync } = require('fs');
 
 // ── FETCH ──────────────────────────────────────────────────────────────────
 async function fetchRSS(url) {
