@@ -46,38 +46,46 @@ document.addEventListener('keyup', e => {
 // ── TOUCH PAD ─────────────────────────────────────────────────────────────
 let touchPad = null;
 
-function createTouchPad() {
-  if (touchPad) return;
+function createTouchPad(scale=1) {
   touchPad = document.createElement('div');
   touchPad.id = 'touchPad';
+  const padH   = Math.round(140 * scale);
+  const padPad  = Math.round(24  * scale);
   touchPad.style.cssText = `
     position: absolute;
     bottom: 0; left: 0; right: 0;
-    height: 140px;
+    height: ${padH}px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 24px 24px;
+    padding: 0 ${padPad}px ${padPad}px;
     pointer-events: none;
     z-index: 10;
     user-select: none;
     background: linear-gradient(transparent, rgba(8,12,14,0.7));
   `;
 
-  function makeBtn(label, color, extraStyle='') {
+  const btnBase  = Math.round(72 * scale);
+  const btnFire_ = Math.round(80 * scale);
+  const btnPause_= Math.round(48 * scale);
+  const gap_     = Math.round(10 * scale);
+  const fs_base  = Math.round(18 * scale);
+  const fs_fire  = Math.round(22 * scale);
+  const fs_pause = Math.round(13 * scale);
+
+  function makeBtn(label, color, w, h, fs) {
     const btn = document.createElement('div');
     btn.style.cssText = `
-      width: 72px; height: 72px;
+      width: ${w}px; height: ${h}px;
       background: rgba(8,12,14,0.85);
       border: 1px solid ${color};
       border-radius: 4px;
       display: flex; align-items: center; justify-content: center;
       font-family: 'IBM Plex Mono', monospace;
-      font-size: 18px; color: ${color};
+      font-size: ${fs}px; color: ${color};
       pointer-events: auto;
       touch-action: none;
       -webkit-tap-highlight-color: transparent;
-      ${extraStyle}
     `;
     btn.textContent = label;
     return btn;
@@ -85,18 +93,18 @@ function createTouchPad() {
 
   // Left cluster — movement
   const leftCluster = document.createElement('div');
-  leftCluster.style.cssText = 'display:flex; gap:10px; align-items:center;';
-  const btnLeft  = makeBtn('◀', '#4effc4');
-  const btnRight = makeBtn('▶', '#4effc4');
+  leftCluster.style.cssText = `display:flex; gap:${gap_}px; align-items:center;`;
+  const btnLeft  = makeBtn('◀', '#4effc4', btnBase,  btnBase,   fs_base);
+  const btnRight = makeBtn('▶', '#4effc4', btnBase,  btnBase,   fs_base);
   leftCluster.appendChild(btnLeft);
   leftCluster.appendChild(btnRight);
 
   // Right cluster — actions
   const rightCluster = document.createElement('div');
-  rightCluster.style.cssText = 'display:flex; gap:10px; align-items:center;';
-  const btnFire  = makeBtn('✦', '#4effc4', 'width:80px;height:80px;font-size:22px;');
-  const btnLunge = makeBtn('⚡', '#ffcf4e');
-  const btnPause = makeBtn('❙❙', '#607880', 'width:48px;height:48px;font-size:13px;');
+  rightCluster.style.cssText = `display:flex; gap:${gap_}px; align-items:center;`;
+  const btnFire  = makeBtn('✦', '#4effc4', btnFire_,  btnFire_,  fs_fire);
+  const btnLunge = makeBtn('⚡', '#ffcf4e', btnBase,   btnBase,   fs_base);
+  const btnPause = makeBtn('❙❙', '#607880', btnPause_, btnPause_, fs_pause);
   rightCluster.appendChild(btnPause);
   rightCluster.appendChild(btnLunge);
   rightCluster.appendChild(btnFire);
@@ -143,8 +151,6 @@ function openArcade() {
   overlay.style.display = 'flex';
   Viewport.update();
   if (Viewport.mobile) {
-    createTouchPad();
-    showTouchPad();
     requestFullscreen(overlay);
     const bar = document.getElementById('dashBar');
     if (bar) bar.style.display = 'none';
@@ -173,6 +179,7 @@ let score, lives, wave, gameOver, frameCount;
 let bugDir, bugDropping;
 let diveBug = null;
 let nextDiveTrigger = 100, nextPickupTrigger = 380;
+let scale = 1; // computed each startGame — all spatial values multiply by this
 
 const BULLET_SPEED   = 9;
 const BUG_BULLET_SPD = 4.2;
@@ -193,14 +200,29 @@ function startGame() {
   canvas = document.getElementById('gameCanvas');
   Viewport.update();
 
-  const padH = Viewport.mobile ? 140 : 60;
+  const padH = Viewport.mobile ? Math.round(140 * (Math.min(Viewport.width / 360, 1.2))) : 60;
   W = Viewport.mobile ? Viewport.width : Math.min(Viewport.width - 32, 860);
   H = Viewport.height - 52 - padH;
   canvas.width  = W;
   canvas.height = H;
   ctx = canvas.getContext('2d');
 
-  cat = { x:W/2, y:H-48, speed: Viewport.mobile ? 5 : 4, radius:14,
+  // Scale factor — baseline is 360px wide phone. Clamped so desktop never shrinks.
+  const isPortrait = H > W;
+  const refW = Viewport.mobile ? 360 : 860;
+  const refH = Viewport.mobile ? (isPortrait ? 640 : 360) : 600;
+  scale = Viewport.mobile
+    ? Math.min(W / refW, H / refH, 1.2) // cap at 1.2x to avoid huge buttons on tablets
+    : 1;
+
+  // Rebuild touch pad each game so button sizes reflect current scale
+  if (touchPad) { touchPad.remove(); touchPad = null; }
+  if (Viewport.mobile) { createTouchPad(scale); showTouchPad(); }
+
+  CAT_PX = Math.max(1, Math.round(2 * scale));
+  BUG_PX  = Math.max(1, Math.round(2 * scale));
+
+  cat = { x:W/2, y:H-48, speed: Viewport.mobile ? 5*scale : 4, radius:14*scale,
           dashCd:0, dashing:false, dashDir:0, dashFrames:0,
           invincible:0, shootCd:22 };
   bullets=[]; bugs=[]; bugBullets=[]; particles=[]; pickups=[]; yarnBalls=[];
@@ -229,7 +251,8 @@ const CAT_SPRITE=[
   [0,0,0,1,1,0,0,1,1,1,0,0,0],
   [0,0,0,1,0,0,0,0,1,0,0,0,0],
 ];
-const CAT_W=13, CAT_H=10, CAT_PX=2;
+const CAT_W=13, CAT_H=10;
+let CAT_PX=2; // scaled in startGame
 
 const BUG_A=[
   [0,0,1,0,0,0,0,0,0,1,0,0],
@@ -267,7 +290,8 @@ const BUG_C=[
   [0,1,1,0,0,0,0,0,0,1,1,0],
   [1,1,0,0,0,0,0,0,0,0,1,1],
 ];
-const BUG_PX=2, BUG_SW=12, BUG_SH=10;
+let BUG_PX=2; // scaled in startGame
+const BUG_SW=12, BUG_SH=10;
 
 function drawSprite(sprite, px, x, y, color, flicker) {
   if (flicker && Math.floor(frameCount/4)%2===0) return;
@@ -282,7 +306,7 @@ function spawnWave() {
   wave++;
   bugs = [];
   const {cols, rows} = PAGE_SIZE_BUGS;
-  const spacingX = Math.min(52, (W-60)/cols);
+  const spacingX = Math.min(Math.round(52*scale), (W-60)/cols);
   const startX   = (W - cols*spacingX) / 2;
   for (let r=0; r<rows; r++) {
     for (let c=0; c<cols; c++) {
@@ -365,21 +389,22 @@ function update(dt) {
 
   Controls.clearImpulses();
 
-  bullets    = bullets.filter(b => b.y>0 && b.y<H && b.x>0 && b.x<W);
+  // move bullets — culling happens after collision detection below
   bullets.forEach(b => { b.y -= BULLET_SPEED * dt; });
-  bugBullets = bugBullets.filter(b => b.y>0 && b.y<H && b.x>0 && b.x<W);
   bugBullets.forEach(b => { b.x += b.vx * dt; b.y += b.vy * dt; });
 
   // formation drift
   const formed = bugs.filter(b => !b.diving);
   if (formed.length) {
-    const spd = (0.7 + wave*0.12) * dt;
+    const spd = (0.7 + wave*0.12) * dt; // dt applied once here only
     let wall = false;
-    formed.forEach(b => { b.baseX += bugDir*spd*dt; if (b.baseX<24||b.baseX>W-24) wall=true; });
+    formed.forEach(b => { b.baseX += bugDir*spd; if (b.baseX<24||b.baseX>W-24) wall=true; });
     if (wall) { bugDir *= -1; formed.forEach(b => b.baseY += 14); }
   }
 
   // dive trigger — dt-scaled countdown
+  // clear stale diveBug reference if that bug was killed
+  if (diveBug && !bugs.includes(diveBug)) { diveBug=null; nextDiveTrigger=100; }
   nextDiveTrigger -= dt;
   if (!diveBug && nextDiveTrigger <= 0 && bugs.length>0) {
     nextDiveTrigger = 100;
@@ -388,8 +413,9 @@ function update(dt) {
       diveBug = cands[Math.floor(Math.random()*cands.length)];
       diveBug.diving = true;
       const ang = Math.atan2(cat.y-diveBug.y, cat.x-diveBug.x);
-      diveBug.diveVx = Math.cos(ang)*3.5;
-      diveBug.diveVy = Math.sin(ang)*3.5;
+      diveBug.diveVx = Math.cos(ang)*3.5*scale;
+      // ensure enough downward velocity to always follow through past the bottom
+      diveBug.diveVy = Math.max(Math.sin(ang)*3.5*scale, 1.5*scale);
     }
   }
 
@@ -400,7 +426,7 @@ function update(dt) {
       b.diveVy += 0.06 * dt; b.x += b.diveVx * dt; b.y += b.diveVy * dt;
       if (b.y>H+50 || b.x<-50 || b.x>W+50) {
         b.diving=false; b.x=b.baseX; b.y=-50; b.diveVx=0; b.diveVy=0;
-        if (diveBug===b) diveBug=null;
+        if (diveBug===b) { diveBug=null; nextDiveTrigger=100; }
       }
     } else {
       b.x += (b.baseX-b.x)*0.1*dt;
@@ -423,31 +449,12 @@ function update(dt) {
         if (bug.health <= 0) {
           emit(bug.x, bug.y+BUG_SH*BUG_PX/2, bug.color, 18);
           score += bug.type==='C'?200:bug.type==='A'?100:50;
-          if (diveBug===bug) diveBug=null;
+          if (diveBug===bug) { diveBug=null; nextDiveTrigger=100; }
         }
       }
     });
   });
   bugs = bugs.filter(b => b.health > 0);
-
-  if (cat.invincible <= 0 && !cat.dashing) {
-    bugBullets.forEach(b => {
-      const cx=cat.x-CAT_W*CAT_PX/2, cy=cat.y;
-      if (b.x>cx && b.x<cx+CAT_W*CAT_PX && b.y>cy && b.y<cy+CAT_H*CAT_PX) {
-        b.y=H+99; lives--; cat.invincible=180;
-        emit(cat.x, cat.y+CAT_H*CAT_PX/2, C.accent, 20);
-        if (lives <= 0) gameOver=true;
-      }
-    });
-    bugs.filter(b => b.diving).forEach(b => {
-      if (Math.hypot(b.x-cat.x, b.y-cat.y) < 20) {
-        lives--; cat.invincible=180; b.health=0;
-        emit(cat.x, cat.y, C.accent, 20);
-        if (lives <= 0) gameOver=true;
-        if (diveBug===b) diveBug=null;
-      }
-    });
-  }
 
   particles.forEach(p => { p.x+=p.vx*dt; p.y+=p.vy*dt; p.vx*=Math.pow(0.9,dt); p.vy*=Math.pow(0.9,dt); p.life-=0.025*dt; });
   particles = particles.filter(p => p.life > 0);
@@ -462,7 +469,7 @@ function update(dt) {
     if (p.y > H+20) return false;
     const dist = Math.hypot(p.x-cat.x, p.y-(cat.y+CAT_H*CAT_PX/2));
     if (dist < 18 && yarnBalls.length < MAX_YARN) {
-      yarnBalls.push({ angle:(yarnBalls.length*(Math.PI*2/MAX_YARN)), r:YARN_ORBIT_R+yarnBalls.length*8 });
+      yarnBalls.push({ angle:(yarnBalls.length*(Math.PI*2/MAX_YARN)), r:(YARN_ORBIT_R+yarnBalls.length*8)*scale });
       emit(p.x, p.y, C.accent3, 14); score += 300; return false;
     }
     return true;
@@ -471,27 +478,55 @@ function update(dt) {
   const catCX=cat.x, catCY=cat.y+CAT_H*CAT_PX/2;
   yarnBalls.forEach(y => { y.angle += YARN_ORBIT_SPD * dt; });
 
-  // yarn shields the cat — absorb one hit per collision, remove a yarn ball each time
-  if (cat.invincible <= 0 && !cat.dashing && yarnBalls.length > 0) {
-    bugBullets.forEach(b => {
-      if (yarnBalls.length === 0) return;
-      const cx=cat.x-CAT_W*CAT_PX/2, cy=cat.y;
-      if (b.x>cx && b.x<cx+CAT_W*CAT_PX && b.y>cy && b.y<cy+CAT_H*CAT_PX) {
-        b.y=H+99;
-        emit(b.x, b.y, C.accent3, 12);
-        yarnBalls.pop();
-      }
-    });
-    bugs.filter(b => b.diving).forEach(b => {
-      if (yarnBalls.length === 0) return;
-      if (Math.hypot(b.x-cat.x, b.y-cat.y) < 20) {
-        emit(cat.x, cat.y, C.accent3, 12);
-        yarnBalls.pop();
-        b.health=0;
-        if (diveBug===b) diveBug=null;
-      }
-    });
+  if (cat.invincible <= 0 && !cat.dashing) {
+    const cx=cat.x-CAT_W*CAT_PX/2, cy=cat.y;
+
+    // ── YARN SHIELD — runs first, intercepts hits before damage block ──────
+    if (yarnBalls.length > 0) {
+      bugBullets.forEach(b => {
+        if (yarnBalls.length === 0) return;
+        if (b.x>cx && b.x<cx+CAT_W*CAT_PX && b.y>cy && b.y<cy+CAT_H*CAT_PX) {
+          b.y = H+99; // remove bullet
+          emit(b.x, b.y, C.accent3, 12);
+          yarnBalls.pop();
+          cat.invincible = 60; // brief grace period so same-frame bullets don't chain
+        }
+      });
+      bugs.filter(b => b.diving).forEach(b => {
+        if (yarnBalls.length === 0) return;
+        if (Math.hypot(b.x-cat.x, b.y-cat.y) < 20*scale) {
+          emit(cat.x, cat.y, C.accent3, 12);
+          yarnBalls.pop();
+          b.health = 0;
+          cat.invincible = 60;
+          if (diveBug===b) { diveBug=null; nextDiveTrigger=100; }
+        }
+      });
+    }
+
+    // ── NORMAL DAMAGE — only fires if yarn didn't already intercept ────────
+    if (cat.invincible <= 0) {
+      bugBullets.forEach(b => {
+        if (b.x>cx && b.x<cx+CAT_W*CAT_PX && b.y>cy && b.y<cy+CAT_H*CAT_PX) {
+          b.y=H+99; lives--; cat.invincible=180;
+          emit(cat.x, cat.y+CAT_H*CAT_PX/2, C.accent, 20);
+          if (lives <= 0) gameOver=true;
+        }
+      });
+      bugs.filter(b => b.diving).forEach(b => {
+        if (Math.hypot(b.x-cat.x, b.y-cat.y) < 20*scale) {
+          lives--; cat.invincible=180; b.health=0;
+          emit(cat.x, cat.y, C.accent, 20);
+          if (lives <= 0) gameOver=true;
+          if (diveBug===b) { diveBug=null; nextDiveTrigger=100; }
+        }
+      });
+    }
   }
+
+  // cull out-of-bounds bullets after collision detection is complete
+  bullets    = bullets.filter(b => b.y > -10 && b.y < H+10 && b.x > -10 && b.x < W+10);
+  bugBullets = bugBullets.filter(b => b.y > -10 && b.y < H+10 && b.x > -10 && b.x < W+10);
 
   if (bugs.length === 0) spawnWave();
 
