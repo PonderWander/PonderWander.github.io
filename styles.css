@@ -238,6 +238,26 @@ footer { padding: 2rem 0; display: flex; justify-content: space-between; align-i
 }
 .paper-error { font-size: 12px; color: var(--muted); padding: 1.5rem 0; }
 .paper-count-label { font-size: 11px; color: var(--dim); letter-spacing: 0.08em; }
+/* ── PAPER PAGINATION ── */
+.paper-pagination {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.paper-page-label {
+  font-size: 11px;
+  color: var(--dim);
+  letter-spacing: 0.1em;
+  min-width: 48px;
+  text-align: center;
+}
+.paper-pagination .btn:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
 /* ── ABSTRACT details/summary ── */
 .abstract-body {
   font-size: 12px; color: var(--muted); line-height: 1.7;
