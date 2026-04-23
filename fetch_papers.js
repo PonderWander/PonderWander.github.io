@@ -3,19 +3,40 @@
 // Requires Node 18+ (built-in fetch) — no dependencies needed
 
 const SSRN_AUTHOR_ID = '10215177'; // replace with your SSRN author ID
-const RSS_URL        = `https://api.ssrn.com/content/v1/authors/${SSRN_AUTHOR_ID}/papers/rss`;
 const OUTPUT_FILE    = './papers.json';
 const SUMMARY_LENGTH = 280; // chars before abstract is split into summary/full
 
+// Try both known SSRN RSS endpoint formats
+const RSS_URLS = [
+  `https://papers.ssrn.com/sol3/cf_dev/AbsByAuth.cfm?per_id=${SSRN_AUTHOR_ID}&Output=RSS`,
+  `https://api.ssrn.com/content/v1/authors/${SSRN_AUTHOR_ID}/papers/rss`,
+];
+
 const { writeFileSync } = require('fs');
 
+const HEADERS = {
+  'Accept':          'application/rss+xml, application/xml, text/xml, */*',
+  'Accept-Language': 'en-US,en;q=0.9',
+  'User-Agent':      'Mozilla/5.0 (compatible; SiteUpdater/1.0; +https://github.com)',
+  'Cache-Control':   'no-cache',
+};
+
 // ── FETCH ──────────────────────────────────────────────────────────────────
-async function fetchRSS(url) {
-  const res = await fetch(url, {
-    headers: { 'Accept': 'application/rss+xml, application/xml, text/xml' }
-  });
-  if (!res.ok) throw new Error(`RSS fetch failed: ${res.status} ${res.statusText}`);
-  return res.text();
+async function fetchRSS() {
+  for (const url of RSS_URLS) {
+    console.log(`Trying: ${url}`);
+    try {
+      const res = await fetch(url, { headers: HEADERS });
+      if (res.ok) {
+        console.log(`Success: ${url}`);
+        return res.text();
+      }
+      console.warn(`  → ${res.status} ${res.statusText}`);
+    } catch (err) {
+      console.warn(`  → ${err.message}`);
+    }
+  }
+  throw new Error('All SSRN RSS endpoints returned errors — see warnings above');
 }
 
 // ── PARSE ──────────────────────────────────────────────────────────────────
@@ -83,7 +104,8 @@ function parseItems(xml) {
 // ── MAIN ───────────────────────────────────────────────────────────────────
 async function main() {
   console.log(`Fetching SSRN RSS for author ${SSRN_AUTHOR_ID}...`);
-  const xml     = await fetchRSS(RSS_URL);
+  console.log('Endpoints to try:', RSS_URLS);
+  const xml     = await fetchRSS();
   const papers  = parseItems(xml);
 
   if (!papers.length) {
